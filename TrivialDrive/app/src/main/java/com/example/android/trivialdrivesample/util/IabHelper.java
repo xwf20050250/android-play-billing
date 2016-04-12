@@ -598,8 +598,8 @@ public class IabHelper {
         return true;
     }
 
-    public Inventory queryInventory(boolean querySkuDetails, List<String> moreSkus) throws IabException {
-        return queryInventory(querySkuDetails, moreSkus, null);
+    public Inventory queryInventory() throws IabException {
+        return queryInventory(false, null, null);
     }
 
     /**
@@ -679,11 +679,13 @@ public class IabHelper {
      * call from a UI thread.
      *
      * @param querySkuDetails as in {@link #queryInventory}
-     * @param moreSkus as in {@link #queryInventory}
+     * @param moreItemSkus as in {@link #queryInventory}
+     * @param moreSubsSkus as in {@link #queryInventory}
      * @param listener The listener to notify when the refresh operation completes.
      */
-    public void queryInventoryAsync(final boolean querySkuDetails, final List<String> moreSkus,
-            final QueryInventoryFinishedListener listener) throws IabAsyncInProgressException {
+    public void queryInventoryAsync(final boolean querySkuDetails, final List<String> moreItemSkus,
+            final List<String> moreSubsSkus, final QueryInventoryFinishedListener listener)
+        throws IabAsyncInProgressException {
         final Handler handler = new Handler();
         checkNotDisposed();
         checkSetupDone("queryInventory");
@@ -693,7 +695,7 @@ public class IabHelper {
                 IabResult result = new IabResult(BILLING_RESPONSE_RESULT_OK, "Inventory refresh successful.");
                 Inventory inv = null;
                 try {
-                    inv = queryInventory(querySkuDetails, moreSkus);
+                    inv = queryInventory(querySkuDetails, moreItemSkus, moreSubsSkus);
                 }
                 catch (IabException ex) {
                     result = ex.getResult();
@@ -715,15 +717,9 @@ public class IabHelper {
     }
 
     public void queryInventoryAsync(QueryInventoryFinishedListener listener)
-        throws IabAsyncInProgressException {
-        queryInventoryAsync(true, null, listener);
+        throws IabAsyncInProgressException{
+        queryInventoryAsync(false, null, null, listener);
     }
-
-    public void queryInventoryAsync(boolean querySkuDetails, QueryInventoryFinishedListener listener)
-        throws IabAsyncInProgressException {
-        queryInventoryAsync(querySkuDetails, null, listener);
-    }
-
 
     /**
      * Consumes a given in-app product. Consuming can only be done on an item
