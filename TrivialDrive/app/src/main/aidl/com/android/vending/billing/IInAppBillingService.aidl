@@ -42,8 +42,6 @@ import android.os.Bundle;
  * RESULT_ERROR = 6 - Fatal error during the API action
  * RESULT_ITEM_ALREADY_OWNED = 7 - Failure to purchase since item is already owned
  * RESULT_ITEM_NOT_OWNED = 8 - Failure to consume since item is not owned
- * RESULT_PROMO_ELIGIBLE = 9 - User is eligible for a promotion
- * RESULT_NOT_PROMO_ELIGIBLE = 10 - User is not eligible for a promotion
  */
 interface IInAppBillingService {
     /**
@@ -110,7 +108,6 @@ interface IInAppBillingService {
      *                                   "developerPayload":"example developer payload" }'
      *         "INAPP_DATA_SIGNATURE" - String containing the signature of the purchase data that
      *                                  was signed with the private key of the developer
-     *                                  TODO: change this to app-specific keys.
      */
     Bundle getBuyIntent(int apiVersion, String packageName, String sku, String type,
         String developerPayload);
@@ -194,9 +191,8 @@ interface IInAppBillingService {
     /**
      * Returns a pending intent to launch the purchase flow for an in-app item. This method is
      * a variant of the {@link #getBuyIntent} method and takes an additional {@code extraParams}
-     * parameter.
-     * This parameter is a Bundle of optional keys and values that affect the operation
-     * of the method.
+     * parameter. This parameter is a Bundle of optional keys and values that affect the
+     * operation of the method.
      * @param apiVersion billing API version that the app is using, must be 6 or later
      * @param packageName package name of the calling app
      * @param sku the SKU of the in-app item as published in the developer console
@@ -233,6 +229,9 @@ interface IInAppBillingService {
      *                          cleartext.
      *                          We recommend that you use a one-way hash to generate a string from
      *                          the user's ID, and store the hashed string in this field.
+     *                   "vr" - Boolean - an optional flag indicating whether the returned intent
+     *                          should start a VR purchase flow. The apiVersion must also be 7 or
+     *                          later to use this flag.
      */
     Bundle getBuyIntentExtraParams(int apiVersion, String packageName, String sku,
         String type, String developerPayload, in Bundle extraParams);
@@ -245,7 +244,7 @@ interface IInAppBillingService {
      * @param type of the in-app items being requested ("inapp" for one-time purchases
      *        and "subs" for subscriptions)
      * @param continuationToken to be set as null for the first call, if the number of owned
-     *        skus are too many, a continuationToken is returned in the response bundle.
+     *        skus is too large, a continuationToken is returned in the response bundle.
      *        This method can be called again with the continuation token to get the next set of
      *        owned skus.
      * @param extraParams a Bundle with extra params that would be appended into http request
@@ -264,4 +263,19 @@ interface IInAppBillingService {
      */
     Bundle getPurchaseHistory(int apiVersion, String packageName, String type,
         String continuationToken, in Bundle extraParams);
+
+    /**
+    * This method is a variant of {@link #isBillingSupported}} that takes an additional
+    * {@code extraParams} parameter.
+    * @param apiVersion billing API version that the app is using, must be 7 or later
+    * @param packageName package name of the calling app
+    * @param type of the in-app item being purchased ("inapp" for one-time purchases and "subs"
+    *        for subscriptions)
+    * @param extraParams a Bundle with the following optional keys:
+    *        "vr" - Boolean - an optional flag to indicate whether {link #getBuyIntentExtraParams}
+    *               supports returning a VR purchase flow.
+    * @return RESULT_OK(0) on success and appropriate response code on failures.
+    */
+    int isBillingSupportedExtraParams(int apiVersion, String packageName, String type,
+        in Bundle extraParams);
 }
