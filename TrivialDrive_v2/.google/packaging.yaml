@@ -16,13 +16,13 @@
 # End users may safely ignore this file. It has no relevance to other systems.
 ---
 status:       PUBLISHED
-technologies: [Android, "Google Play Services", "Google Play In-app Billing"]
+technologies: [Android, "Google Play Services", "Google Play In-app Billing", "Google Play Billing Library"]
 categories:   [Getting Started]
 languages:    [Java]
-solutions:    [Mobile, Monetization]
+solutions:    [Mobile, Monetization, Play Billing Library]
 github:       googlesamples/android/play/billing
 level:        INTERMEDIATE
-icon:         playstore/screenshot1.png
+icon:         playstore/android_mobile_1.png
 apiRefs:
     - android:com.android.vending.billing.IInAppBillingService
 license: apache2

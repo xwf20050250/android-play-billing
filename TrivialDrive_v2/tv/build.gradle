@@ -1,0 +1,25 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion Integer.valueOf(project.TARGET_SDK_VERSION)
+    buildToolsVersion project.TOOLS_VERSION
+    defaultConfig {
+        applicationId project.APP_ID
+        // We need to hard-code 17 version here due to the leanback library
+        minSdkVersion Integer.valueOf(17)
+        targetSdkVersion Integer.valueOf(project.TARGET_SDK_VERSION)
+        versionCode Integer.valueOf(project.TV_VERSION_CODE)
+        versionName project.TV_VERSION_NAME
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile "com.android.support:leanback-v17:$project.TOOLS_VERSION"
+    compile project(path: ':shared-module')
+}
