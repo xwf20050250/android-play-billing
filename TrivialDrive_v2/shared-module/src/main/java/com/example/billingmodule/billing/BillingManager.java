@@ -18,8 +18,6 @@ package com.example.billingmodule.billing;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-import com.android.billingclient.api.BillingBroadcastManager;
-import com.android.billingclient.api.BillingClientImpl;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.BillingClient.FeatureType;
@@ -51,8 +49,6 @@ public class BillingManager implements PurchasesUpdatedListener {
     /** A reference to BillingClient **/
     private BillingClient mBillingClient;
 
-    /** Provides purchase notification while this app is running **/
-    private BillingBroadcastManager mBroadcastManager;
     /**
      * True if billing service is connected now.
      */
