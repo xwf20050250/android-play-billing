@@ -1,4 +1,4 @@
-# Trivial Drive
+# Trivial Drive v2
 
 Sample for In-App Billing version 3
 
