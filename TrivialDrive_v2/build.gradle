@@ -3,25 +3,30 @@ project.ext {
     APP_ID = "com.example.billingsample"
 
     MINIMUM_SDK_VERSION = 14
-    TARGET_SDK_VERSION = 25
-    TOOLS_VERSION = "25.0.0"
+    TARGET_SDK_VERSION = 26
+    TOOLS_VERSION = "26.0.1"
+    SUPPORT_VERSION = "26.0.0"
 
-    MOBILE_VERSION_CODE = 1
-    MOBILE_VERSION_NAME = "1.01"
+    FEATURE_VERSION_CODE = 1
+    FEATURE_VERSION_NAME = "1.01"
 
-    WEAR_VERSION_CODE = 2
-    WEAR_VERSION_NAME = "1.02"
+    MOBILE_VERSION_CODE = 2
+    MOBILE_VERSION_NAME = "1.02"
 
-    TV_VERSION_CODE = 3
-    TV_VERSION_NAME = "1.03"
+    WEAR_VERSION_CODE = 3
+    WEAR_VERSION_NAME = "1.03"
+
+    TV_VERSION_CODE = 4
+    TV_VERSION_NAME = "1.04"
 }
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.1'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta2'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -30,6 +35,7 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
     }
 }
