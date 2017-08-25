@@ -31,18 +31,18 @@
             <ImageView
                 android:id="@id/free_or_premium"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="@dimen/wear_image_height"
                 android:contentDescription="@string/content_desc_free_vs_premium_indicator"
-                android:padding="8dp"
+                android:padding="@dimen/wear_image_padding"
                 android:src="@drawable/free"/>
 
             <ImageView
                 android:id="@id/gas_gauge"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_height="@dimen/wear_gas_height"
                 android:layout_gravity="center"
                 android:contentDescription="@string/content_desc_gas_gauge_indicator"
-                android:paddingBottom="8dp"/>
+                android:paddingBottom="@dimen/wear_gas_padding"/>
 
             <Button
                 android:id="@id/button_drive"

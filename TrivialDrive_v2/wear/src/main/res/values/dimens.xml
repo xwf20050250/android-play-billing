@@ -15,12 +15,9 @@
    limitations under the License.
 -->
 <resources>
-    <dimen name="header_margin_top">0dp</dimen>
-    <dimen name="max_padding">4dp</dimen>
-    <dimen name="wear_contents_margin">25dp</dimen>
-    <dimen name="button_width">150dp</dimen>
-    <dimen name="sku_details_row_height">200dp</dimen>
-
-    <dimen name="sku_details_price_width">50dp</dimen>
-    <dimen name="sku_details_header_row_height">50dp</dimen>
+    <dimen name="wear_contents_margin">24dp</dimen>
+    <dimen name="wear_image_height">72dp</dimen>
+    <dimen name="wear_image_padding">8dp</dimen>
+    <dimen name="wear_gas_height">32dp</dimen>
+    <dimen name="wear_gas_padding">8dp</dimen>
 </resources>
