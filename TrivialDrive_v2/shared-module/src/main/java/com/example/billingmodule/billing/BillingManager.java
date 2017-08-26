@@ -28,7 +28,8 @@ import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchasesUpdatedListener;
-import com.android.billingclient.api.SkuDetails.SkuDetailsResult;
+import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -98,7 +99,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         Log.d(TAG, "Creating Billing client.");
         mActivity = activity;
         mBillingUpdatesListener = updatesListener;
-        mBillingClient = new BillingClient.Builder(mActivity).setListener(this).build();
+        mBillingClient = BillingClient.newBuilder(mActivity).setListener(this).build();
 
         Log.d(TAG, "Starting setup.");
 
@@ -150,7 +151,7 @@ public class BillingManager implements PurchasesUpdatedListener {
             @Override
             public void run() {
                 Log.d(TAG, "Launching in-app purchase flow. Replace old SKU? " + (oldSkus != null));
-                BillingFlowParams purchaseParams = new BillingFlowParams.Builder()
+                BillingFlowParams purchaseParams = BillingFlowParams.newBuilder()
                         .setSku(skuId).setType(billingType).setOldSkus(oldSkus).build();
                 mBillingClient.launchBillingFlow(mActivity, purchaseParams);
             }
@@ -182,11 +183,14 @@ public class BillingManager implements PurchasesUpdatedListener {
             @Override
             public void run() {
                 // Query the purchase async
-                mBillingClient.querySkuDetailsAsync(itemType, skuList,
+                SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+                params.setSkusList(skuList).setType(itemType);
+                mBillingClient.querySkuDetailsAsync(params.build(),
                         new SkuDetailsResponseListener() {
                             @Override
-                            public void onSkuDetailsResponse(SkuDetailsResult result) {
-                                listener.onSkuDetailsResponse(result);
+                            public void onSkuDetailsResponse(int responseCode,
+                                                             List<SkuDetails> skuDetailsList) {
+                                listener.onSkuDetailsResponse(responseCode, skuDetailsList);
                             }
                         });
             }
@@ -210,10 +214,10 @@ public class BillingManager implements PurchasesUpdatedListener {
         // Generating Consume Response listener
         final ConsumeResponseListener onConsumeListener = new ConsumeResponseListener() {
             @Override
-            public void onConsumeResponse(String outToken, @BillingResponse int billingResult) {
+            public void onConsumeResponse(int responseCode, String purchaseToken) {
                 // If billing service was disconnected, we try to reconnect 1 time
                 // (feel free to introduce your retry policy here).
-                mBillingUpdatesListener.onConsumeFinished(outToken, billingResult);
+                mBillingUpdatesListener.onConsumeFinished(purchaseToken, responseCode);
             }
         };
 
