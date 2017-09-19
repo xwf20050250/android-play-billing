@@ -27,7 +27,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.BuildConfig;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -116,11 +115,6 @@ public abstract class BaseGamePlayActivity extends FragmentActivity implements B
 
         if (getPackageName().startsWith(DEFAULT_PACKAGE_PREFIX)) {
             throw new RuntimeException("Please change the sample's package name!");
-        }
-
-        if (BuildConfig.APPLICATION_ID.startsWith(DEFAULT_PACKAGE_PREFIX)) {
-            throw new RuntimeException("Please change the sample's package name inside gradle "
-                    + "file and AndroidManifest.xml! See README.");
         }
 
         // Try to restore dialog fragment if we were showing it prior to screen rotation

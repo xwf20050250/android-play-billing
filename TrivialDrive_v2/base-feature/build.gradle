@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.feature'
 
 // Create a variable called keystorePropertiesFile, and initialize it to your
 // keystore.properties file, in the rootProject folder.
@@ -17,15 +17,20 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
+
+    baseFeature = true
+
     compileSdkVersion Integer.valueOf(project.TARGET_SDK_VERSION)
     buildToolsVersion project.TOOLS_VERSION
+
     defaultConfig {
-        applicationId project.APP_ID
         minSdkVersion Integer.valueOf(project.MINIMUM_SDK_VERSION)
-        targetSdkVersion Integer.valueOf(project.TARGET_SDK_VERSION)
-        versionCode Integer.valueOf(project.WEAR_VERSION_CODE)
-        versionName project.WEAR_VERSION_NAME
+        targetSdkVersion project.TARGET_SDK_VERSION
+        versionCode Integer.valueOf(FEATURE_VERSION_CODE)
+        versionName FEATURE_VERSION_NAME
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         // Google Play Billing APIs only work with apps signed for production.
         debug {
@@ -44,7 +49,11 @@ android {
 dependencies {
     implementation project(':shared-module')
 
-    provided 'com.google.android.wearable:wearable:2.0.0-alpha3'
-    implementation 'com.google.android.support:wearable:2.0.0-alpha3'
-    implementation 'com.google.android.gms:play-services-wearable:9.8.0'
+    application project(':mobile')
+    wearApp project(':wear')
+
+    androidTestApi('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testApi 'junit:junit:4.12'
 }
