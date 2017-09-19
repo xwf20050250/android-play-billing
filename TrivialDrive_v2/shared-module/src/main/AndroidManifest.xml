@@ -17,4 +17,8 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.example.billingmodule">
+
+    <!-- VERY IMPORTANT! Don't forget this permission, or in-app billing won't work. -->
+    <uses-permission android:name="com.android.vending.BILLING"/>
+
 </manifest>
