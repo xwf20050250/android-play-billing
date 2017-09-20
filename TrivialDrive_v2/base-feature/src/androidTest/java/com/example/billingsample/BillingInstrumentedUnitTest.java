@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Google Inc. All Rights Reserved.
+ * Copyright 2017 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * It's just an example of instrumented unit test that needs an actual device/emulator to run
+ * Instrumentation tests for billing UI.
  *
  * Testing Support Library:
  *  https://d.android.com/topic/libraries/testing-support-library/
@@ -57,9 +57,9 @@ import org.junit.runner.RunWith;
  */
 @RunWith(AndroidJUnit4.class)
 @SmallTest
-public class ExampleInstrumentedUnitTest {
+public class BillingInstrumentedUnitTest {
 
-    private static final String TAG = "ExInstrumentedUnitTest";
+    private static final String TAG = "BillingInstrumented";
 
     @Rule
     public ActivityTestRule<TrivialDriveActivity> mActivityRule =
@@ -142,6 +142,8 @@ public class ExampleInstrumentedUnitTest {
         // Testing subscriptions if they are supported for current client
         BillingManager billingManager = activity.getBillingManager();
         boolean areSubscriptionsSupported = billingManager.areSubscriptionsSupported();
+
+        getInstrumentation().waitForIdleSync();
 
         RecyclerView recyclerView = (RecyclerView) acquireFragment.getView().findViewById(
                 R.id.list);
