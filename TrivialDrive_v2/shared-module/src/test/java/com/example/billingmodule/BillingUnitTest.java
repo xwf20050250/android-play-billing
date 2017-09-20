@@ -27,7 +27,7 @@ import java.util.List;
 import org.junit.Test;
 
 /**
- * It's just an example of a local unit test that doesn't need an actual device/emulator to run
+ * Unit tests for billing model.
  *
  * Note:
  *     To work on unit tests, switch the Test Artifact in the Build Variants view.
@@ -38,7 +38,7 @@ import org.junit.Test;
  * Local Unit tests:
  *     https://d.android.com/training/testing/unit-testing/local-unit-tests.html
  */
-public class ExampleUnitTest {
+public class BillingUnitTest {
     @Test
     public void billingHelperData_isConsistent() throws Exception {
         List<String> inAppList = BillingConstants.getSkuList(BillingClient.SkuType.INAPP);

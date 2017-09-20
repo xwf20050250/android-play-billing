@@ -24,6 +24,8 @@ android {
     buildToolsVersion project.TOOLS_VERSION
 
     defaultConfig {
+        // Tests with Google Play Billing APIs must use production package name.
+        testApplicationId project.APP_ID
         minSdkVersion Integer.valueOf(project.MINIMUM_SDK_VERSION)
         targetSdkVersion project.TARGET_SDK_VERSION
         versionCode Integer.valueOf(FEATURE_VERSION_CODE)
