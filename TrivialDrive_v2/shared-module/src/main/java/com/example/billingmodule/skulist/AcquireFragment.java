@@ -72,7 +72,7 @@ public class AcquireFragment extends DialogFragment {
             handleManagerAndUiReady();
         }
         // Setup a toolbar for this fragment
-        Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
+        Toolbar toolbar = root.findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_up);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,19 +182,19 @@ public class AcquireFragment extends DialogFragment {
         mBillingProvider.getBillingManager().querySkuDetailsAsync(billingType, skusList,
                 new SkuDetailsResponseListener() {
                     @Override
-                    public void onSkuDetailsResponse(SkuDetails.SkuDetailsResult result) {
+                    public void onSkuDetailsResponse(int responseCode, List<SkuDetails> skuDetailsList) {
 
-                        if (result.getResponseCode() != BillingResponse.OK) {
+                        if (responseCode != BillingResponse.OK) {
                             Log.w(TAG, "Unsuccessful query for type: " + billingType
-                                    + ". Error code: " + result.getResponseCode());
-                        } else if (result.getSkuDetailsList() != null
-                                && result.getSkuDetailsList().size() > 0) {
+                                    + ". Error code: " + responseCode);
+                        } else if (skuDetailsList != null
+                                && skuDetailsList.size() > 0) {
                             // If we successfully got SKUs, add a header in front of the row
                             @StringRes int stringRes = (billingType == SkuType.INAPP)
                                     ? R.string.header_inapp : R.string.header_subscriptions;
                             inList.add(new SkuRowData(getString(stringRes)));
                             // Then fill all the other rows
-                            for (SkuDetails details : result.getSkuDetailsList()) {
+                            for (SkuDetails details : skuDetailsList) {
                                 Log.i(TAG, "Adding sku: " + details);
                                 inList.add(new SkuRowData(details, SkusAdapter.TYPE_NORMAL,
                                         billingType));
@@ -230,4 +230,3 @@ public class AcquireFragment extends DialogFragment {
         return new UiManager(adapter, provider);
     }
 }
-
