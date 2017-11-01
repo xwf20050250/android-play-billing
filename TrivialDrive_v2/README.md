@@ -46,15 +46,19 @@ ON THE GOOGLE PLAY DEVELOPER CONSOLE
 IN THE CODE
 
 1.  Open BillingManager.java, find the declaration of BASE_64_ENCODED_PUBLIC_KEY
-    constant and replace its value with the public key you retrieved in
-    Step 2.
+    constant and replace its value with the public key you retrieved in Step 2.
 
-2.  Change the sample's package name to your package name. To do that, update
-    the package name in AndroidManifest.xml and correct the references
-    (especially the references to the R object).
+2.  Change the sample's package name to your package name.
+    You can update the package name by setting the `APP_ID`
+    in the root project `build.gradle` file.
 
-3.  Export an APK, signing it with your PRODUCTION (not debug) developer
-    certificate.
+3.  Update `keystore.properties` with your release keystore information.
+    https://developer.android.com/studio/publish/app-signing.html#secure-shared-keystore
+
+    The storeFile location can be a relative or absolute filename.
+    https://docs.gradle.org/current/userguide/working_with_files.html
+
+    Or, you can sign your APK from Android Studio "Build -> Generate Signed APK..."
 
 BACK TO THE GOOGLE PLAY DEVELOPER CONSOLE
 
