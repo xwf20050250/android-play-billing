@@ -23,7 +23,7 @@ android {
     compileSdkVersion androidCompileSdkVersion as Integer
     buildToolsVersion androidBuildToolsVersion
     defaultConfig {
-        // The applicationId should be set in the root gradle.properties files.
+        // The applicationId should be set in the project gradle.properties files.
         applicationId androidApplicationId
         minSdkVersion androidMinimumSdkVersion as Integer
         targetSdkVersion androidTargetSdkVersion as Integer
@@ -35,12 +35,6 @@ android {
         enabled = true
     }
     signingConfigs {
-        debug {
-            storeFile keystoreStoreFile
-            storePassword keystoreStorePassword
-            keyAlias keystoreKeyAlias
-            keyPassword keystoreKeyPassword
-        }
         release {
             storeFile keystoreStoreFile
             storePassword keystoreStorePassword
@@ -50,7 +44,6 @@ android {
     }
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -67,45 +60,48 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    // Google Play Billing Library.
     implementation "com.android.billingclient:billing:$billingVersion"
+
+    // Android Support Library.
     implementation "com.android.support:appcompat-v7:$supportVersion"
     implementation "com.android.support:design:$supportVersion"
     implementation "com.android.support:cardview-v7:$supportVersion"
     implementation "com.android.support:support-v4:$supportVersion"
     implementation "com.google.code.gson:gson:$gsonVersion"
 
-    // Glide
+    // Glide image library.
     implementation ("com.github.bumptech.glide:glide:$glideVersion") {
         exclude group: "com.android.support"
     }
 
-    // Firebase
+    // Firebase libraries.
     implementation "com.google.firebase:firebase-core:$firebaseVersion"
     implementation "com.google.firebase:firebase-functions:$firebaseVersion"
     implementation "com.google.firebase:firebase-messaging:$firebaseVersion"
 
-    // FirebaseUI Auth
+    // FirebaseUI Auth library.
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUiVersion"
 
-    // Kotlin
+    // Kotlin library.
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion"
 
-    // ViewModel and LiveData
+    // ViewModel and LiveData extensions.
     implementation "android.arch.lifecycle:extensions:$archLifecycleVersion"
 
-    // Java8 support for Lifecycles
+    // Java8 support for Lifecycles.
     implementation "android.arch.lifecycle:common-java8:$archLifecycleVersion"
 
-    // Room (use 1.1.0-alpha3 for latest alpha)
+    // Room Architecture Components.
     implementation "android.arch.persistence.room:runtime:$archRoomVersion"
-    // Kotlin annotation processor for Room
+
+    // Kotlin annotation processor for Room.
     kapt "android.arch.persistence.room:compiler:$archRoomVersion"
-    // Kotlin data binding
+
+    // Kotlin data binding.
     kapt "com.android.databinding:compiler:$gradleToolsVersion"
 
-    // Test dependencies
+    // Test dependencies.
     testImplementation "junit:junit:$jUnitVersion"
 }
 

@@ -113,7 +113,7 @@ This sample application uses Firebase (Auth, Notifications, Firestore).
 
 1. Download the generated `google-services.json` and move it to your app module directory
 
-    * `{Project folder}/android/ClassyTaxi/app/google-services.json`
+    * `{project_folder}/android/ClassyTaxi/app/google-services.json`
 
 # Android App Setup
 
@@ -123,15 +123,15 @@ In order to use the Google Play Billing APIs, you must pick a unique package nam
 
 1. Open Android Studio, select File > Open and pick the root build.gradle file
 
-    * `{Project folder}/android/ClassyTaxi/build.gradle`
+    * `{project_folder}/android/ClassyTaxi/build.gradle`
 
 1. Change the `androidApplicationId` to the correct Android package name
 
-    * `{Project folder}/android/ClassyTaxi/gradle.properties`
+    * `{project_folder}/android/ClassyTaxi/gradle.properties`
 
 1. Confirm that you have the latest `google-services.json` from the Firebase configuration in your app directory
 
-    * `{Project folder}/android/ClassyTaxi/app/google-services.json`
+    * `{project_folder}/android/ClassyTaxi/app/google-services.json`
 
 1. Optional: If you want to test the UI without the Firebase server, change this variable in `Constants.kt`
 
@@ -177,7 +177,7 @@ In order to use the Google Play Billing APIs, you must pick a unique package nam
 
     * Copy `service-account.json` to
 
-        *  `{Project folder}/firebase/server/src/service-account.json`
+        *  `{project_folder}/firebase/server/src/service-account.json`
 
 1. Optional: Create a license test account to [test subscriptions quickly](https://android-developers.googleblog.com/2018/01/faster-renewals-for-test-subscriptions.html) without spending money
 
@@ -213,7 +213,7 @@ In order to use the Google Play Billing APIs, you must pick a unique package nam
 
     * [https://firebase.google.com/docs/cli/](https://firebase.google.com/docs/cli/)
 
-1. From the command line, navigate to `{Project folder}/firebase/server`
+1. From the command line, navigate to `{project_folder}/firebase/server`
 
 1. Run `npm install` to install dependencies
 
@@ -249,19 +249,17 @@ In order to use the Google Play Billing APIs, you must pick a unique package nam
 
 # Optional: Build the Android app from the command line
 
-The sample allows you to specify signing keys and a package name with the Gradle command line. This allows you to build and sign a release APK without making any modifications to the git repository. The sample contains a file `keystore.properties` that you can copy (or modify) to meet your needs.
+The sample allows you to specify signing keys and a package name with the Gradle command line. This allows you to build and sign a release APK without making any modifications to the git repository. The sample contains a file `example-keystore.properties` that you can copy (or modify) to meet your needs.
 
-1. Create a file `release-keystore.properties` with your release key information (see `keystore.properties` for the expected format)
+1. Create a file `release-keystore.properties` with your release key information (see `example-keystore.properties` for the expected format)
 
     * [https://developer.android.com/studio/publish/app-signing.html#signing-manually](https://developer.android.com/studio/publish/app-signing.html#signing-manually)
 
-    * Note: The sample contains a keystore for development `debug.jks`: Do **NOT** use this keystore in a production application because the secret is public
-
 1. Download the generated `google-services.json` and move it to your app module directory
 
-    * `{Project folder}/android/ClassyTaxi/app/google-services.json`
+    * `{project_folder}/android/ClassyTaxi/app/google-services.json`
 
-1. Run the following Gradle command in the directory `{Project folder}/android/ClassyTaxi`
+1. Run the following Gradle command in the directory `{project_folder}/android/ClassyTaxi`
 
     * Replace the Android application ID with your unique package name
 
@@ -269,7 +267,7 @@ The sample allows you to specify signing keys and a package name with the Gradle
 
 1. Find the location of the output APK
 
-       {Project folder}/android/ClassyTaxi/app/build/outputs/apk/release/app-release.apk
+       {project_folder}/android/ClassyTaxi/app/build/outputs/apk/release/app-release.apk
 
 1. Deploy this APK to your Internal Test track for fast development
 
@@ -283,7 +281,7 @@ The sample allows you to specify signing keys and a package name with the Gradle
 
 ## Full list of commands to build a release APK
 
-`cd {Project folder}/android/ClassyTaxi`
+`cd {project_folder}/android/ClassyTaxi`
 
 ### Put release keystore information in the root project directory
 

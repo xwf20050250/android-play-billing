@@ -17,20 +17,32 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 // Edit package name in gradle.properties
+println "Using configuration from gradle.properties"
 println "Using package name: $androidApplicationId"
-println "Using keystore: $keystorePropertiesFilename"
+println "Using keystore properties: $keystorePropertiesFilename"
 
 ext {
     // Keystore information is loaded from a file.
     keystorePropertiesFile = rootProject.file(keystorePropertiesFilename)
     keystoreProperties = new Properties()
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
-    keystoreStoreFile = rootProject.file(keystoreProperties['storeFile'])
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    } else {
+        println "Cannot find keystore properties file. " +
+                "A) Create this file, B) use a different file, or C) use assembleDebug."
+        println "A) Create $keystorePropertiesFilename"
+        println "B) ./gradlew -PkeystorePropertiesFilename=release-keystore.properties assembleRelease"
+        println "C) ./gradlew assembleDebug"
+        println ""
+    }
+    keystoreFilename = keystoreProperties['storeFile']
+    // Signing config values.
+    keystoreStoreFile = keystoreFilename == null ? null : rootProject.file(keystoreFilename)
     keystoreStorePassword = keystoreProperties['storePassword']
     keystoreKeyAlias = keystoreProperties['keyAlias']
     keystoreKeyPassword = keystoreProperties['keyPassword']
 
+    // Android version information.
     androidMinimumSdkVersion = 16
     androidTargetSdkVersion = 27
     androidCompileSdkVersion = 27
@@ -38,21 +50,25 @@ ext {
 }
 
 buildscript {
+    // Library versions.
+    ext.archCoreVersion = '1.1.1'
+    ext.archLifecycleVersion = '1.1.1'
+    ext.archRoomVersion = '1.0.0'
     ext.billingVersion = '1.0'
     ext.firebaseVersion = '12.0.1'
     ext.firebaseUiVersion = '3.3.0'
     ext.glideVersion = '4.4.0'
+    ext.gsonVersion= '2.8.2'
+    ext.jsonVersion = '20140107'
+    ext.supportVersion = '27.1.0'
+
+    // Tools versions.
     ext.gradleGoogleVersion = '3.2.0'
     ext.gradleToolsVersion = '3.2.0-alpha09'
-    ext.gsonVersion= '2.8.2'
     ext.kotlinVersion = '1.2.31'
-    ext.supportVersion = '27.1.0'
-    ext.archLifecycleVersion = '1.1.1'
-    ext.archCoreVersion = '1.1.1'
-    ext.archRoomVersion = '1.0.0'
 
+    // Testing versions.
     ext.jUnitVersion = '4.12'
-    ext.jsonVersion = '20140107'
 
     repositories {
         google()
