@@ -152,7 +152,7 @@
 
                             <Button
                                 android:id="@+id/account_hold_button"
-                                android:onClick="@{() -> billingViewModel.openPlayStoreSubscriptions()}"
+                                android:onClick="@{() -> billingViewModel.openAccountHoldSubscription()}"
                                 android:text="@string/fix_button_text"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
