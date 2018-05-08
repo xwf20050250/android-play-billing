@@ -145,7 +145,7 @@
 
                             <Button
                                 android:id="@+id/premium_account_hold_button"
-                                android:onClick="@{() -> billingViewModel.openPlayStoreSubscriptions()}"
+                                android:onClick="@{() -> billingViewModel.openAccountHoldSubscription()}"
                                 android:text="@string/fix_button_text"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -155,7 +155,7 @@
 
                         <LinearLayout
                             android:id="@+id/premium_premium_content"
-                            app:premiumUpdatePremiumContent="@{subscriptionViewModel.premiumContent}"
+                            app:updatePremiumContent="@{subscriptionViewModel.premiumContent}"
                             android:orientation="vertical"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
