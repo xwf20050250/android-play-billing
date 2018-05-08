@@ -105,10 +105,10 @@ fun updateBasicContent(view: View, basicContent: ContentResource?) {
  * Update premium content on the Premium fragment when the URL changes.
  *
  * When the image URL content changes, the binding adapter triggers this view in the layout XML.
- * See the layout XML files for the app:premiumUpdatePremiumContent attribute.
+ * See the layout XML files for the app:updatePremiumContent attribute.
  */
-@BindingAdapter("premiumUpdatePremiumContent")
-fun premiumUpdatePremiumContent(view: View, premiumContent: ContentResource?) {
+@BindingAdapter("updatePremiumContent")
+fun updatePremiumContent(view: View, premiumContent: ContentResource?) {
     val image = view.premium_premium_image
     val textView = view.premium_premium_text
     val url = premiumContent?.url

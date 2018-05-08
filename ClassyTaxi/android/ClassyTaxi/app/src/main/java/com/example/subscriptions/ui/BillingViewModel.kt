@@ -53,7 +53,8 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
     val openPlayStoreSubscriptionsEvent = SingleLiveEvent<String>()
 
     /**
-     * Open the Play Store basic subscription.
+     * Open the Play Store subscription center. If the user has exactly one SKU,
+     * then open the deeplink to the specific SKU.
      */
     fun openPlayStoreSubscriptions() {
         val hasBasic = deviceHasGooglePlaySubscription(purchases.value, Constants.BASIC_SKU)
@@ -74,6 +75,37 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
                 openPlayStoreSubscriptionsEvent.call()
             }
         }
+    }
+
+    /**
+     * Open account hold subscription.
+     *
+     * We need to use the server data to understand account hold.
+     * Most of the other deeplinks are based on the purchase tokens returned on the local device.
+     * Since the purchase tokens will not be returned when the subscription is in account hold,
+     * we look at the server data to determine the deeplink.
+     */
+    fun openAccountHoldSubscription() {
+        val isPremiumOnServer = serverHasSubscription(subscriptions.value, Constants.PREMIUM_SKU)
+        val isBasicOnServer = serverHasSubscription(subscriptions.value, Constants.BASIC_SKU)
+        when {
+            isPremiumOnServer -> openPremiumPlayStoreSubscriptions()
+            isBasicOnServer -> openBasicPlayStoreSubscriptions()
+        }
+    }
+
+    /**
+     * Open the Play Store basic subscription.
+     */
+    fun openBasicPlayStoreSubscriptions() {
+        openPlayStoreSubscriptionsEvent.postValue(Constants.BASIC_SKU)
+    }
+
+    /**
+     * Open the Play Store premium subscription.
+     */
+    fun openPremiumPlayStoreSubscriptions() {
+        openPlayStoreSubscriptionsEvent.postValue(Constants.PREMIUM_SKU)
     }
 
     /**
