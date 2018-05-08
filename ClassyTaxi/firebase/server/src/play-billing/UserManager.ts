@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CollectionReference } from "@google-cloud/firestore";
 import PurchaseManager from "./PurchasesManager";
 import { SubscriptionPurchase, SkuType } from "./types/purchases";
 import { GOOGLE_PLAY_FORM_OF_PAYMENT, SubscriptionPurchaseImpl } from "./internal/purchases_impl";

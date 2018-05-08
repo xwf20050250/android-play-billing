@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-const projectId = firebaseConfig.projectId
-const basicContentUrl = `https://${projectId}.firebaseapp.com/content/basic.jpg`
-const premiumContentUrl = `https://${projectId}.firebaseapp.com/content/premium.jpg`
+
+const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
+const projectId = firebaseConfig.projectId;
+const basicContentUrl = `https://${projectId}.firebaseapp.com/content/basic.jpg`;
+const premiumContentUrl = `https://${projectId}.firebaseapp.com/content/premium.jpg`;
 
 /* Content is the interface defining content of subscription plan
- * In this sample, it's just an url to an image. 
+ * In this sample, it's just an url to an image.
  */
 export interface Content {
   url: string
