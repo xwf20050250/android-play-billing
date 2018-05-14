@@ -198,11 +198,11 @@ export class SubscriptionPurchaseImpl implements SubscriptionPurchase {
 
   isGracePeriod(): boolean {
     const now = Date.now();
-    return (this.latestNotificationType === NotificationType.SUBSCRIPTION_IN_GRACE_PERIOD) // latest notification indicated that it has entered grace peroid
-      && (now <= this.expiryTimeMillis) // sanity check -- the subscription hasn't expired
-      && (this.autoRenewing === true); // sanity check -- and it's renewing
-    // As of 20180412, it's impossible to tell from a Subscriptions:get API response if a subscription is in grace period
-    // Therefore, we have to rely on latest realtime developer notification to identify the status
+    return (this.paymentState === 0) // payment hasn't been received
+      && (now <= this.expiryTimeMillis) // and the subscription hasn't expired
+      && (this.autoRenewing === true); // and it's renewing
+    // One can also check if (this.latestNotificationType === NotificationType.SUBSCRIPTION_IN_GRACE_PERIOD)
+    // Either way is fine. We decide to rely on Subscriptions:get API response because it works even when realtime dev notification delivery is delayed
   }
 
   isAccountHold(): boolean {
