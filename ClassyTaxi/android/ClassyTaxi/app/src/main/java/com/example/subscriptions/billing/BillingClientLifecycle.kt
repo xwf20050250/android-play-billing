@@ -48,16 +48,7 @@ class BillingClientLifecycle private constructor(
     /**
      * Instantiate a new BillingClient instance.
      */
-    private var billingClient: BillingClient = createBillingClient()
-
-    /**
-     * Create a new BillingClient when this class is instantiated.
-     *
-     * Since the BillingClient can only be used once, we need to create a new one
-     * after closing the previous connection to the Google Play Store.
-     */
-    private fun createBillingClient() =
-            BillingClient.newBuilder(app.applicationContext).setListener(this).build()
+    lateinit private var billingClient: BillingClient
 
     companion object {
         private const val TAG = "BillingLifecycle"
@@ -73,6 +64,10 @@ class BillingClientLifecycle private constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun create() {
+        // Create a new BillingClient in onCreate().
+        // Since the BillingClient can only be used once, we need to create a new instance
+        // after ending the previous connection to the Google Play Store in onDestroy().
+        billingClient = BillingClient.newBuilder(app.applicationContext).setListener(this).build()
         if (!billingClient.isReady) {
             Log.d(TAG, "BillingClient: Start connection...")
             billingClient.startConnection(this)
@@ -82,10 +77,10 @@ class BillingClientLifecycle private constructor(
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun destroy() {
         if (billingClient.isReady) {
-            Log.d(TAG, "BillingClient can only be used once -- closing and resetting")
+            Log.d(TAG, "BillingClient can only be used once -- closing")
+            // BillingClient can only be used once.
+            // After calling endConnection(), we must create a new BillingClient.
             billingClient.endConnection()
-            // BillingClient can only be used once, so we create a new instance to reset.
-            billingClient = createBillingClient()
         }
     }
 
@@ -110,6 +105,9 @@ class BillingClientLifecycle private constructor(
      * You still need to check the Google Play Billing API to know when purchase tokens are removed.
      */
     fun updatePurchases() {
+        if (!billingClient.isReady) {
+            Log.e(TAG, "BillingClient is not ready to query for existing purchases")
+        }
         val result = billingClient.queryPurchases(BillingClient.SkuType.SUBS)
         if (result == null) {
             Log.i(TAG, "Update purchase: Null purchase result")
