@@ -171,16 +171,23 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
      * Use the Google Play Billing Library to make a purchase.
      */
     private fun buy(sku: String, oldSku: String?) {
+        // First, determine whether the new SKU can be purchased.
         val isSkuOnServer = serverHasSubscription(subscriptions.value, sku)
         val isSkuOnDevice = deviceHasGooglePlaySubscription(purchases.value, sku)
         Log.d("Billing", "$sku - isSkuOnServer: $isSkuOnServer, isSkuOnDevice: $isSkuOnDevice")
         when {
-            isSkuOnServer && isSkuOnDevice -> {
+            isSkuOnDevice && isSkuOnServer -> {
                 Log.e("Billing", "You cannot buy a SKU that is already owned: $sku. " +
                         "This is an error in the application trying to use Google Play Billing.")
                 return
             }
-            isSkuOnServer && !isSkuOnDevice -> {
+            isSkuOnDevice && !isSkuOnServer -> {
+                Log.e("Billing", "The Google Play Billing Library APIs indicate that" +
+                        "this SKU is already owned, but the purchase token is not registered " +
+                        "with the server. There might be an issue registering the purchase token.")
+                return
+            }
+            !isSkuOnDevice && isSkuOnServer -> {
                 Log.w("Billing", "WHOA! The server says that the user already owns " +
                         "this item: $sku. This could be from another Google account. " +
                         "You should warn the user that they are trying to buy something " +
@@ -192,27 +199,25 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
                         "you should allow the user to subscribe with Google Play, and then " +
                         "cancel the subscription after this new subscription is complete. " +
                         "This will allow the user to seamlessly transition their payment " +
-                        "method from something else to this Google account.")
+                        "method from an existing payment method to this Google Play account.")
                 return
             }
         }
 
-        // Check old SKU value before passing to the API.
-        oldSku?.let {
-            Log.d("Billing", "Old SKU: $oldSku")
-            if (!deviceHasGooglePlaySubscription(purchases.value, oldSku)) {
-                Log.e("Billing", "You cannot replace a SKU that is not already owned: $oldSku. " +
-                        "This is an error in the application")
-                return
-            }
+        // Second, determine whether the old SKU can be replaced.
+        // If the old SKU cannot be used, set this value to null and ignore it.
+        val oldSkuToBeReplaced = if (isOldSkuReplaceable(subscriptions.value, purchases.value, oldSku)) {
+            oldSku
+        } else {
+            null
         }
-        val oldSkuForBillingApi = getOldSkuForBillingApi(subscriptions.value, purchases.value, oldSku)
 
-        if (sku == oldSkuForBillingApi) {
+        // Third, create the billing parameters for the purchase.
+        if (sku == oldSkuToBeReplaced) {
             Log.i("Billing", "Re-subscribe.")
-        } else if (Constants.PREMIUM_SKU == sku && Constants.BASIC_SKU == oldSkuForBillingApi) {
+        } else if (Constants.PREMIUM_SKU == sku && Constants.BASIC_SKU == oldSkuToBeReplaced) {
             Log.i("Billing", "Upgrade!")
-        } else if (Constants.BASIC_SKU == sku && Constants.PREMIUM_SKU == oldSkuForBillingApi) {
+        } else if (Constants.BASIC_SKU == sku && Constants.PREMIUM_SKU == oldSkuToBeReplaced) {
             Log.i("Billing", "Downgrade...")
         } else {
             Log.i("Billing", "Regular purchase.")
@@ -222,27 +227,31 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
                 .setSku(sku)
                 .setType(BillingClient.SkuType.SUBS)
         // Only set the old SKU parameter if the old SKU is already owned.
-        if (oldSkuForBillingApi != null && oldSkuForBillingApi != sku) {
-            billingBuilder.addOldSku(oldSkuForBillingApi)
+        if (oldSkuToBeReplaced != null && oldSkuToBeReplaced != sku) {
+            billingBuilder.addOldSku(oldSkuToBeReplaced)
         }
         val billingParams = billingBuilder.build()
+
         // Send the parameters to the Activity in order to launch the billing flow.
         buyEvent.postValue(billingParams)
     }
 
-    private fun getOldSkuForBillingApi(
+    /**
+     * Determine if the old SKU can be replaced.
+     */
+    private fun isOldSkuReplaceable(
             subscriptions: List<SubscriptionStatus>?,
             purchases: List<Purchase>?,
             oldSku: String?
-    ): String? {
-        if (oldSku == null) return null
+    ): Boolean {
+        if (oldSku == null) return false
         val isOldSkuOnServer = serverHasSubscription(subscriptions, oldSku)
         val isOldSkuOnDevice = deviceHasGooglePlaySubscription(purchases, oldSku)
         return when {
             !isOldSkuOnDevice -> {
                 Log.e("Billing", "You cannot replace a SKU that is NOT already owned: $oldSku. " +
                         "This is an error in the application trying to use Google Play Billing.")
-                null
+                false
             }
             !isOldSkuOnServer -> {
                 Log.i("Billing", "Refusing to replace the old SKU because it is " +
@@ -250,18 +259,17 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
                         "original purchase. The old SKU might already " +
                         "be owned by a different app account, and we should not transfer the " +
                         "subscription without user permission.")
-                null
+                false
             }
             else -> {
-                subscriptionForSku(subscriptions, oldSku)?.let {
-                    if (it.subAlreadyOwned) {
-                        Log.i("Billing", "The old subscription is used by a " +
-                                "different app account. However, it was paid for by the same " +
-                                "Google account that is on this device.")
-                        null
-                    } else {
-                        oldSku
-                    }
+                val subscription = subscriptionForSku(subscriptions, oldSku) ?: return false
+                if (subscription.subAlreadyOwned) {
+                    Log.i("Billing", "The old subscription is used by a " +
+                            "different app account. However, it was paid for by the same " +
+                            "Google account that is on this device.")
+                    false
+                } else {
+                    true
                 }
             }
         }
