@@ -62,11 +62,11 @@ public class AcquireFragment extends DialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.acquire_fragment, container, false);
-        mErrorTextView = (TextView) root.findViewById(R.id.error_textview);
-        mRecyclerView = (RecyclerView) root.findViewById(R.id.list);
+        mErrorTextView = root.findViewById(R.id.error_textview);
+        mRecyclerView = root.findViewById(R.id.list);
         mLoadingView = root.findViewById(R.id.screen_wait);
         if (mBillingProvider != null) {
             handleManagerAndUiReady();
@@ -190,7 +190,7 @@ public class AcquireFragment extends DialogFragment {
                         } else if (skuDetailsList != null
                                 && skuDetailsList.size() > 0) {
                             // If we successfully got SKUs, add a header in front of the row
-                            @StringRes int stringRes = (billingType == SkuType.INAPP)
+                            @StringRes int stringRes = SkuType.INAPP.equals(billingType)
                                     ? R.string.header_inapp : R.string.header_subscriptions;
                             inList.add(new SkuRowData(getString(stringRes)));
                             // Then fill all the other rows
@@ -216,7 +216,9 @@ public class AcquireFragment extends DialogFragment {
                                 mAdapter.updateData(inList);
                                 setWaitScreen(false);
                             }
-
+                        } else {
+                            // Handle empty state
+                            displayAnErrorIfNeeded();
                         }
 
                         if (executeWhenFinished != null) {

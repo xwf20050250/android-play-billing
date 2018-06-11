@@ -128,8 +128,8 @@ public abstract class BaseGamePlayActivity extends FragmentActivity implements B
 
         mScreenWait = findViewById(R.id.screen_wait);
         mScreenMain = findViewById(R.id.screen_main);
-        mCarImageView = ((ImageView) findViewById(R.id.free_or_premium));
-        mGasImageView = ((ImageView) findViewById(R.id.gas_gauge));
+        mCarImageView = findViewById(R.id.free_or_premium);
+        mGasImageView = findViewById(R.id.gas_gauge);
 
         // Specify purchase and drive buttons listeners
         // Note: This couldn't be done inside *.xml for Android TV since TV layout is inflated
