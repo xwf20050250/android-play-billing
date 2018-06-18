@@ -45,14 +45,15 @@
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue-red.min.css" />
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/2.7.0/firebaseui.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
     <script src="/__/firebase/4.12.1/firebase-app.js"></script>
     <script src="/__/firebase/4.12.1/firebase-auth.js"></script>
     <script src="/__/firebase/4.12.1/firebase-functions.js"></script>
     <script src="/__/firebase/init.js"></script>
     <script src="https://cdn.firebase.com/libs/firebaseui/2.7.0/firebaseui.js"></script>
 
-    <script src="scripts.js"></script>
+    <script defer src="scripts.js"></script>
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>    
 
   </head>
   <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
@@ -62,9 +63,9 @@
         <div class="mdl-layout__header-row">
           <h3>Classy Taxi</h3>
           <div class="mdl-layout-spacer"></div>
-          <button id="sign-out-button" class="mdl-button mdl-js-button mdl-color-text--white content-ui" onclick="signOut()">Sign Out</button>
+          <button id="sign-out-button" class="mdl-button mdl-js-button mdl-color-text--white content-ui hidden" onclick="signOut()">Sign Out</button>
         </div>
-        <div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark content-ui" id="tab-bar">
+        <div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark content-ui hidden" id="tab-bar">
           <a href="#home" class="mdl-layout__tab is-active">Home</a>
           <a href="#premium" class="mdl-layout__tab">Premium</a>
           <a href="#settings" class="mdl-layout__tab">Settings</a>
@@ -75,10 +76,10 @@
 
       <main class="mdl-layout__content">
         <!-- Login UI -->
-        <div class="login-ui" id="firebaseui-auth-container"></div>
+        <div class="login-ui hidden" id="firebaseui-auth-container"></div>
 
         <!-- Content UI -->
-        <div class="content-ui" id="tab-content">
+        <div class="content-ui hidden" id="tab-content">
           <div class="mdl-layout__tab-panel is-active" id="home">
             <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
               <div class="mdl-card mdl-cell mdl-cell--12-col">
@@ -137,6 +138,5 @@
         </div>
       </main>
     </div>
-    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   </body>
 </html>

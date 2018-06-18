@@ -19,6 +19,11 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+.hidden {
+  display: none;
+}
+
 .mdl-demo .mdl-layout__header-row {
   padding-left: 40px;
 }
@@ -251,9 +256,4 @@ html, body {
   margin-right: 40px;
   margin-bottom: 40px;
   z-index: 900;
-}
-
-/* Hide dynamic UIs so that screen won't flash at load */
-.content-ui, .login-ui {
-  display: none
 }

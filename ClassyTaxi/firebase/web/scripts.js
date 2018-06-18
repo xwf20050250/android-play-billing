@@ -19,12 +19,23 @@
 // Initialize the FirebaseUI Widget using Firebase.
 const ui = new firebaseui.auth.AuthUI(firebase.auth());
 
+const contentUi = document.querySelectorAll('.content-ui');
+const loginUi = document.querySelector('.login-ui');
+
+const hideElement = element => {
+  element.classList.add('hidden');
+}
+
+const showElement = element => {
+  element.classList.remove('hidden');
+}
+
 // Show login screen for user who hasn't logged in
 const showLoginUI = () => {
   // Hide Content UI and show Login UI
-  $('.content-ui').hide();
-  $('.login-ui').show();
-
+  contentUi.forEach(hideElement);
+  showElement(loginUi);
+  
   // Configure FirebaseUI Auth
   const uiConfig = {
     signInSuccessUrl: '/',
@@ -41,57 +52,57 @@ const showLoginUI = () => {
 // Show content screen for user who has logged in
 const showContentUI = () => {
   // Show loading UI for both basic and premium content
-  $('#spinner-basic-content').show();
-  $('#spinner-premium-content').show();
+  const spinnerBasic = document.querySelector('#spinner-basic-content');
+  const spinnerPremium = document.querySelector('#spinner-premium-content');
+  showElement(spinnerBasic);
+  showElement(spinnerPremium);
 
   // Hide content of both basic and premium content,
   // as we need response from backend to show them
-  $('#basic-content').hide();
-  $('#premium-content').hide();
-  $('#subscribe-requirement').hide();
-  $('#subscribe-premium-requirement').hide();
+  const basicContent = document.querySelector('#basic-content');
+  const premiumContent = document.querySelector('#premium-content');
+  const requirementBasic = document.querySelector('#subscribe-requirement');
+  const requirementPremium = document.querySelector('#subscribe-premium-requirement');
+  [basicContent, premiumContent, requirementBasic, requirementPremium].forEach(hideElement);
 
   // Hide Login UI and show Content UI
-  $('.login-ui').hide();
-  $('.content-ui').show();
+  contentUi.forEach(showElement);
+  hideElement(loginUi);
+
+  const loadContent = async options => {
+    try {
+      result = await firebase.functions().httpsCallable(options.contentType)();
+      // Now we have our basic content, show it to user
+      options.content.querySelector('img').setAttribute('src', result.data.url);
+      showElement(options.content);
+    } catch(err) {
+      // It seems that we don't have access to content.
+      // Let user know that they need to subscribe
+      showElement(options.error);
+      if (err.code !== 'permission-denied') {
+        console.error('Undexpected error occurred', err);
+      }
+    } finally {
+      // Hide loading UI elements as we have finished loading
+      hideElement(options.spinner);
+    }
+  }
 
   // Attempt to load basic content
-  firebase.functions().httpsCallable('content_basic')()
-    .then((result) => {
-      // Now we have our basic content, show it to user
-      const contentUrl = result.data.url;
-      $('#basic-content img').attr('src', contentUrl);
-      $('#basic-content').show();
-    }).catch((err) => {
-      // It seems that we don't have access to content.
-      // Let user know that they need to subscribe
-      $('#subscribe-requirement').show();
-      if (err.code !== 'permission-denied') {
-        console.error('Undexpected error occurred', err);
-      }
-    }).finally(() => {
-      // Hide loading UI elements as we have finished loading
-      $('#spinner-basic-content').hide();
-    });
+  loadContent({
+    contentType: 'content_basic',
+    content: basicContent,
+    error: requirementBasic,
+    spinner: spinnerBasic
+  });
 
   // Attempt to load premium content
-  firebase.functions().httpsCallable('content_premium')()
-    .then((result) => {
-      // Now we have our premium content, show it to user
-      const contentUrl = result.data.url;
-      $('#premium-content img').attr('src', contentUrl);
-      $('#premium-content').show();
-    }).catch((err) => {
-      // It seems that we don't have access to content.
-      // Let user know that they need to subscribe
-      $('#subscribe-premium-requirement').show();
-      if (err.code !== 'permission-denied') {
-        console.error('Undexpected error occurred', err);
-      }
-    }).finally(() => {
-      // Hide loading UI elements as we have finished loading
-      $('#spinner-premium-content').hide();
-    });
+  loadContent({
+    contentType: 'content_premium',
+    content: premiumContent,
+    error: requirementPremium,
+    spinner: spinnerPremium
+  });
 }
 
 // Sign the user out
@@ -100,7 +111,7 @@ const signOut = () => {
 }
 
 // Listen to authentication state changes and update UI accordingly
-firebase.auth().onAuthStateChanged(function(user) {
+firebase.auth().onAuthStateChanged(user => {
   if (user) {
     showContentUI();
   } else {
