@@ -71,7 +71,7 @@ const showContentUI = () => {
 
   const loadContent = async options => {
     try {
-      result = await firebase.functions().httpsCallable(options.contentType)();
+      const result = await firebase.functions().httpsCallable(options.contentType)();
       // Now we have our basic content, show it to user
       options.content.querySelector('img').setAttribute('src', result.data.url);
       showElement(options.content);
