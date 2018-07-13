@@ -75,7 +75,7 @@ Classy Taxi is an end-to-end project that highlights subscription features on Go
 
     * Link your Google Cloud Console project to the Google Play Developer Account
 
-        * Note: A Google Play Console account can only be linked to a single Google Cloud Console project, so **we recommend creating a dedicated Google Cloud Console project specifically for all of your Google Play Console needs**
+        * Note: A Google Play Console account can only be linked to a single Google Cloud Console project, so **we recommend creating a dedicated Google Cloud Console project that is shared by all apps in your Google Play Console**
 
         * Configure a service account in Google Cloud Console
 
@@ -281,19 +281,16 @@ The sample allows you to specify signing keys and a package name with the Gradle
 
 ## Full list of commands to build a release APK
 
-`cd {project_folder}/android/ClassyTaxi`
+    cd {project_folder}/android/ClassyTaxi
 
-### Put release keystore information in the root project directory
-
+    ### Put release keystore information in the root project directory
     cp /path/to/your/secrets/release.jks .
     cp /path/to/your/secrets/release-keystore.properties .
 
-### Put Firebase google-services.json in the `app/` directory
-
+    ### Put Firebase google-services.json in the `app/` directory
     cp /path/to/your/secrets/google-services.json ./app/google-services.json
 
-### Check to make sure the files are in the correct location
-
+    ### Check to make sure the files are in the correct location
     ls -1 *.jks *keystore.properties
     # debug.jks
     # keystore.properties
