@@ -51,7 +51,8 @@ describe("Let's test purchase going through payment failure and recover from the
       priceAmountMicros: "99000000",
       countryCode: "JP",
       developerPayload: "",
-      orderId: RandomGenerator.generateRandomOrderId()
+      orderId: RandomGenerator.generateRandomOrderId(),
+      paymentState: 1
     };
     apiClientMock.mockResponse(newPurchasePlayApiResponse);
 
@@ -72,26 +73,26 @@ describe("Let's test purchase going through payment failure and recover from the
     const gracePeriodPurchasePlayApiResponse = Object.assign({}, newPurchasePlayApiResponse);
     expiryTimeOfGracePeriod = expiryTimeOfOriginalPurchase + 2000;
     gracePeriodPurchasePlayApiResponse.expiryTimeMillis = expiryTimeOfGracePeriod;
+    gracePeriodPurchasePlayApiResponse.orderId = newPurchasePlayApiResponse + '..0';
+    gracePeriodPurchasePlayApiResponse.paymentState = 0;
     apiClientMock.mockResponse(gracePeriodPurchasePlayApiResponse);
   });
 
-  const expectPurchaseRecordIsStillActiveInGracePeriod = async (isRealtimeNotificationSetup: boolean) => {
+  const expectPurchaseRecordIsStillActiveInGracePeriod = async () => {
     // Query subscriptions that has been registered to the user
     const purchaseList = await playBilling.users().queryCurrentSubscriptions(randomUserId, sku, packageName);
     expect(purchaseList.length, 'the user has only one subscription registered to himself').to.equal(1);
     expect(purchaseList[0].purchaseToken, 'the purchase match the one we registered earlier').to.equal(randomPurchaseToken);
     expect(purchaseList[0].isEntitlementActive(), 'the subscription is active').to.equal(true);
-
-    if (isRealtimeNotificationSetup) {
-      // As of 20180417, we can only tell if a subscription is in grace period by using Realtime Developer Notification
-      expect(purchaseList[0].isGracePeriod(), 'the subscription in grace period').to.equal(true);
-    }
+    expect(purchaseList[0].isGracePeriod(), 'the subscription in grace period').to.equal(true);
   };
 
   const fastForwardToAccountHold = () => {
     testConfig.dateMock.mockCurrentTimestamp(expiryTimeOfGracePeriod + 1000);
     // In Account Hold, the expiry time is restored to its original value
     const accountHoldPurchasePlayApiResponse = Object.assign({}, newPurchasePlayApiResponse);
+    accountHoldPurchasePlayApiResponse.paymentState = 0;
+    accountHoldPurchasePlayApiResponse.orderId = newPurchasePlayApiResponse + '..0';
     apiClientMock.mockResponse(accountHoldPurchasePlayApiResponse);
   };
 
@@ -109,7 +110,7 @@ describe("Let's test purchase going through payment failure and recover from the
     testConfig.dateMock.mockCurrentTimestamp(subscriptionRecoveryTime);
     const renewedPurchasePlayApiResponse = Object.assign({}, newPurchasePlayApiResponse);
     expiryTimeOfRecoveredAndRenewedPurchase = expiryTimeOfOriginalPurchase + 200000;
-    renewedPurchasePlayApiResponse.orderId = newPurchasePlayApiResponse.orderId + '..1';
+    renewedPurchasePlayApiResponse.orderId = newPurchasePlayApiResponse.orderId + '..0';
     renewedPurchasePlayApiResponse.expiryTimeMillis = expiryTimeOfRecoveredAndRenewedPurchase;
     apiClientMock.mockResponse(renewedPurchasePlayApiResponse);
   };
@@ -138,7 +139,7 @@ describe("Let's test purchase going through payment failure and recover from the
       }
       await playBilling.purchases().processDeveloperNotification(packageName, gracePeriodNotification);
 
-      await expectPurchaseRecordIsStillActiveInGracePeriod(true);
+      await expectPurchaseRecordIsStillActiveInGracePeriod();
     });
 
     it('the purchase then enter account hold, so should be considered inactive', async () => {
@@ -182,7 +183,7 @@ describe("Let's test purchase going through payment failure and recover from the
 
   describe('if we do not have Realtime Developer notification set up', async () => {
     it('the purchase should still be considered active during grace period', async () => {
-      await expectPurchaseRecordIsStillActiveInGracePeriod(false);
+      await expectPurchaseRecordIsStillActiveInGracePeriod();
     });
 
     it('the purchase then enter account hold, so should be considered inactive', async () => {
