@@ -93,15 +93,16 @@ dependencies {
     }
 
     // Firebase libraries.
-    implementation "com.google.firebase:firebase-core:$firebaseVersion"
-    implementation "com.google.firebase:firebase-functions:$firebaseVersion"
-    implementation "com.google.firebase:firebase-messaging:$firebaseVersion"
+    implementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
+    implementation "com.google.firebase:firebase-core:$firebaseCoreVersion"
+    implementation "com.google.firebase:firebase-functions:$firebaseFunctionsVersion"
+    implementation "com.google.firebase:firebase-messaging:$firebaseMessagingVersion"
 
     // FirebaseUI Auth library.
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUiVersion"
 
     // Kotlin library.
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
     // ViewModel and LiveData extensions.
     implementation "android.arch.lifecycle:extensions:$archLifecycleVersion"
@@ -114,9 +115,6 @@ dependencies {
 
     // Kotlin annotation processor for Room.
     kapt "android.arch.persistence.room:compiler:$archRoomVersion"
-
-    // Kotlin data binding.
-    kapt "com.android.databinding:compiler:$gradleToolsVersion"
 
     // Test dependencies.
     testImplementation "junit:junit:$jUnitVersion"

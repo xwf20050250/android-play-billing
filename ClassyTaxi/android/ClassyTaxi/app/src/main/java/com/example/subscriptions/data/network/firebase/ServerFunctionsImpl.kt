@@ -120,7 +120,7 @@ class ServerFunctionsImpl : ServerFunctions {
                     decrementRequestCount()
                     if (task.isSuccessful) {
                         Log.i(TAG, "Basic content update successful")
-                        val result = (task.result.data as? Map<String, Any>)?.let {
+                        val result = (task.result?.data as? Map<String, Any>)?.let {
                             ContentResource.listFromMap(it)
                         }
                         if (result == null) {
@@ -159,7 +159,7 @@ class ServerFunctionsImpl : ServerFunctions {
                     decrementRequestCount()
                     if (task.isSuccessful) {
                         Log.i(TAG, "Premium content update successful")
-                        val result = (task.result.data as? Map<String, Any>)?.let {
+                        val result = (task.result?.data as? Map<String, Any>)?.let {
                             ContentResource.listFromMap(it)
                         }
                         if (result == null) {
@@ -197,7 +197,7 @@ class ServerFunctionsImpl : ServerFunctions {
                     decrementRequestCount()
                     if (task.isSuccessful) {
                         Log.i(TAG, "Subscription status update successful")
-                        val result = (task.result.data as? Map<String, Any>)?.let {
+                        val result = (task.result?.data as? Map<String, Any>)?.let {
                             SubscriptionStatus.listFromMap(it)
                         }
                         if (result == null) {
@@ -235,7 +235,7 @@ class ServerFunctionsImpl : ServerFunctions {
                     decrementRequestCount()
                     if (task.isSuccessful) {
                         Log.i(TAG, "Subscription registration successful")
-                        val result = (task.result.data as? Map<String, Any>)?.let {
+                        val result = (task.result?.data as? Map<String, Any>)?.let {
                             SubscriptionStatus.listFromMap(it)
                         }
                         if (result == null) {
@@ -317,7 +317,7 @@ class ServerFunctionsImpl : ServerFunctions {
                     decrementRequestCount()
                     if (task.isSuccessful) {
                         Log.i(TAG, "Subscription transfer successful")
-                        val result = (task.result.data as? Map<String, Any>)?.let {
+                        val result = (task.result?.data as? Map<String, Any>)?.let {
                             SubscriptionStatus.listFromMap(it)
                         }
                         if (result == null) {
