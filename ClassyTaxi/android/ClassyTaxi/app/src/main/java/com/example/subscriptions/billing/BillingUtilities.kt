@@ -16,9 +16,28 @@
 
 package com.example.subscriptions.billing
 
+import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.Purchase
 import com.example.subscriptions.Constants
 import com.example.subscriptions.data.SubscriptionStatus
+
+/**
+ * Map [BillingClient.BillingResponse] codes to the name for debugging.
+ */
+val billingResponseNames = mapOf(
+        Pair(BillingClient.BillingResponse.OK, "OK"),
+        Pair(BillingClient.BillingResponse.SERVICE_DISCONNECTED, "SERVICE_DISCONNECTED"),
+        Pair(BillingClient.BillingResponse.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE"),
+        Pair(BillingClient.BillingResponse.BILLING_UNAVAILABLE, "BILLING_UNAVAILABLE"),
+        Pair(BillingClient.BillingResponse.ITEM_UNAVAILABLE, "ITEM_UNAVAILABLE"),
+        Pair(BillingClient.BillingResponse.DEVELOPER_ERROR, "DEVELOPER_ERROR"),
+        Pair(BillingClient.BillingResponse.ERROR, "ERROR"),
+        Pair(BillingClient.BillingResponse.USER_CANCELED,"USER_CANCELED"),
+        Pair(BillingClient.BillingResponse.FEATURE_NOT_SUPPORTED, "FEATURE_NOT_SUPPORTED"),
+        Pair(BillingClient.BillingResponse.ITEM_ALREADY_OWNED, "ITEM_ALREADY_OWNED"),
+        Pair(BillingClient.BillingResponse.ITEM_NOT_OWNED, "ITEM_NOT_OWNED")
+)
+
 
 /**
  * Return subscription for the provided SKU, if it exists.

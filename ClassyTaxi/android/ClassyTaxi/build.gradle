@@ -54,7 +54,7 @@ buildscript {
     ext.archCoreVersion = '1.1.1'
     ext.archLifecycleVersion = '1.1.1'
     ext.archRoomVersion = '1.1.1'
-    ext.billingVersion = '1.0'
+    ext.billingVersion = '1.2'
     ext.firebaseAuthVersion = '12.0.1' // TODO: Update to 16.1.0 or newer.
     ext.firebaseCoreVersion = '12.0.1' // TODO: Update to 16.0.6 or newer.
     ext.firebaseFunctionsVersion = '12.0.1' // TODO: Update to 16.1.3 or newer.

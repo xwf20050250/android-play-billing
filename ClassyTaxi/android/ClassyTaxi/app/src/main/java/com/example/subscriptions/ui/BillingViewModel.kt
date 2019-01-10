@@ -19,7 +19,6 @@ package com.example.subscriptions.ui
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.util.Log
-import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.Purchase
 import com.example.subscriptions.Constants
@@ -35,6 +34,12 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
      * Local billing purchase data.
      */
     private val purchases = (application as SubApp).billingClientLifecycle.purchases
+
+    /**
+     * SkuDetails for all known SKUs.
+     */
+    private val skusWithSkuDetails =
+            (application as SubApp).billingClientLifecycle.skusWithSkuDetails
 
     /**
      * Subscriptions record according to the server.
@@ -223,12 +228,14 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
             Log.i("Billing", "Regular purchase.")
         }
         // Create the parameters for the purchase.
-        val billingBuilder = BillingFlowParams.newBuilder()
-                .setSku(sku)
-                .setType(BillingClient.SkuType.SUBS)
+        val skuDetails = skusWithSkuDetails.value?.get(sku) ?: run {
+            Log.e("Billing", "Could not find SkuDetails to make purchase.")
+            return
+        }
+        val billingBuilder = BillingFlowParams.newBuilder().setSkuDetails(skuDetails)
         // Only set the old SKU parameter if the old SKU is already owned.
         if (oldSkuToBeReplaced != null && oldSkuToBeReplaced != sku) {
-            billingBuilder.addOldSku(oldSkuToBeReplaced)
+            billingBuilder.setOldSku(oldSkuToBeReplaced)
         }
         val billingParams = billingBuilder.build()
 

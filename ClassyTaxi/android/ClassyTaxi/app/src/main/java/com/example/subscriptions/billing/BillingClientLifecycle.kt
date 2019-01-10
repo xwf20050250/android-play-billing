@@ -28,11 +28,16 @@ import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.SkuDetailsParams
+import com.android.billingclient.api.SkuDetailsResponseListener
+import com.example.subscriptions.Constants
 import com.example.subscriptions.ui.SingleLiveEvent
 
 class BillingClientLifecycle private constructor(
         private val app: Application
-) : LifecycleObserver, PurchasesUpdatedListener, BillingClientStateListener {
+) : LifecycleObserver, PurchasesUpdatedListener, BillingClientStateListener,
+        SkuDetailsResponseListener {
 
     /**
      * The purchase event is observable. Only one oberver will be notified.
@@ -44,6 +49,11 @@ class BillingClientLifecycle private constructor(
      * detects new or existing purchases. All observers will be notified.
      */
     val purchases = MutableLiveData<List<Purchase>>()
+
+    /**
+     * SkuDetails for all known SKUs.
+     */
+    val skusWithSkuDetails = MutableLiveData<Map<String, SkuDetails>>()
 
     /**
      * Instantiate a new BillingClient instance.
@@ -88,9 +98,72 @@ class BillingClientLifecycle private constructor(
         Log.d(TAG, "onBillingSetupFinished: $billingResponseCode")
         if (billingResponseCode == BillingClient.BillingResponse.OK) {
             // The billing client is ready. You can query purchases here.
+            querySkuDetails()
             updatePurchases()
         }
     }
+
+    /**
+     * In order to make purchasese, you need the [SkuDetails] for the item or subscription.
+     * This is an asynchronous call that will receive a result in [onSkuDetailsResponse].
+     */
+    fun querySkuDetails() {
+        val params = SkuDetailsParams.newBuilder()
+                .setType(BillingClient.SkuType.SUBS)
+                .setSkusList(listOf(
+                        Constants.BASIC_SKU,
+                        Constants.PREMIUM_SKU
+                ))
+                .build()
+        params?.let { skuDetailsParams ->
+            Log.i(TAG, "querySkuDetailsAsync")
+            billingClient.querySkuDetailsAsync(skuDetailsParams, this)
+        }
+    }
+
+    /**
+     * Receives the result from [querySkuDetails].
+     *
+     * Store the SkuDetails and post them in the [skusWithSkuDetails]. This allows other parts
+     * of the app to use the [SkuDetails] to show SKU information and make purchases.
+     */
+    override fun onSkuDetailsResponse(
+            @BillingClient.BillingResponse responseCode: Int,
+            skuDetailsList: MutableList<SkuDetails>?
+    ) {
+        when (responseCode) {
+            BillingClient.BillingResponse.OK -> {
+                Log.i(TAG, "onSkuDetailsResponse: ${billingResponseNames[responseCode]}")
+                if (skuDetailsList == null) {
+                    Log.w(TAG, "onSkuDetailsResponse: No SkuDetails found")
+                    skusWithSkuDetails.postValue(emptyMap())
+                } else
+                    skusWithSkuDetails.postValue(HashMap<String, SkuDetails>().apply {
+                        for (details in skuDetailsList) {
+                            put(details.sku, details)
+                        }
+                    }.also { postedValue ->
+                        Log.i(TAG, "SkuDetails count: ${postedValue.size}")
+                    })
+            }
+            BillingClient.BillingResponse.SERVICE_DISCONNECTED,
+            BillingClient.BillingResponse.SERVICE_UNAVAILABLE,
+            BillingClient.BillingResponse.BILLING_UNAVAILABLE,
+            BillingClient.BillingResponse.ITEM_UNAVAILABLE,
+            BillingClient.BillingResponse.DEVELOPER_ERROR,
+            BillingClient.BillingResponse.ERROR -> {
+                Log.e(TAG, "onSkuDetailsResponse: ${billingResponseNames[responseCode]}")
+            }
+            BillingClient.BillingResponse.USER_CANCELED,
+            BillingClient.BillingResponse.FEATURE_NOT_SUPPORTED,
+            BillingClient.BillingResponse.ITEM_ALREADY_OWNED,
+            BillingClient.BillingResponse.ITEM_NOT_OWNED -> {
+                // These response codes are not expected.
+                Log.wtf(TAG, "onSkuDetailsResponse: ${billingResponseNames[responseCode]}")
+            }
+        }
+    }
+
 
     override fun onBillingServiceDisconnected() {
         Log.d(TAG, "onBillingServiceDisconnected")
@@ -190,8 +263,8 @@ class BillingClientLifecycle private constructor(
 
     fun launchBillingFlow(activity: Activity, params: BillingFlowParams): Int {
         val sku = params.sku
-        val oldSkus = params.oldSkus
-        Log.i(TAG, "Launching billing flow wth sku: $sku, oldSkus: $oldSkus")
+        val oldSku = params.oldSku
+        Log.i(TAG, "Launching billing flow wth sku: $sku, oldSku: $oldSku")
         if (!billingClient.isReady) {
             Log.e(TAG, "BillingClient is not ready to start billing flow")
         }
