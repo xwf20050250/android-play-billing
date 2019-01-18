@@ -95,7 +95,9 @@ class BillingClientLifecycle private constructor(
     }
 
     override fun onBillingSetupFinished(billingResponseCode: Int) {
-        Log.d(TAG, "onBillingSetupFinished: $billingResponseCode")
+        billingResponseNames[billingResponseCode].let { name ->
+            Log.d(TAG, "onBillingSetupFinished: $billingResponseCode $name")
+        }
         if (billingResponseCode == BillingClient.BillingResponse.OK) {
             // The billing client is ready. You can query purchases here.
             querySkuDetails()
@@ -133,7 +135,9 @@ class BillingClientLifecycle private constructor(
     ) {
         when (responseCode) {
             BillingClient.BillingResponse.OK -> {
-                Log.i(TAG, "onSkuDetailsResponse: ${billingResponseNames[responseCode]}")
+                billingResponseNames[responseCode].let { name ->
+                    Log.i(TAG, "onSkuDetailsResponse: $responseCode $name")
+                }
                 if (skuDetailsList == null) {
                     Log.w(TAG, "onSkuDetailsResponse: No SkuDetails found")
                     skusWithSkuDetails.postValue(emptyMap())
@@ -152,14 +156,18 @@ class BillingClientLifecycle private constructor(
             BillingClient.BillingResponse.ITEM_UNAVAILABLE,
             BillingClient.BillingResponse.DEVELOPER_ERROR,
             BillingClient.BillingResponse.ERROR -> {
-                Log.e(TAG, "onSkuDetailsResponse: ${billingResponseNames[responseCode]}")
+                billingResponseNames[responseCode].let { name ->
+                    Log.e(TAG, "onSkuDetailsResponse: $responseCode $name")
+                }
             }
             BillingClient.BillingResponse.USER_CANCELED,
             BillingClient.BillingResponse.FEATURE_NOT_SUPPORTED,
             BillingClient.BillingResponse.ITEM_ALREADY_OWNED,
             BillingClient.BillingResponse.ITEM_NOT_OWNED -> {
                 // These response codes are not expected.
-                Log.wtf(TAG, "onSkuDetailsResponse: ${billingResponseNames[responseCode]}")
+                billingResponseNames[responseCode].let { name ->
+                    Log.wtf(TAG, "onSkuDetailsResponse: $responseCode $name")
+                }
             }
         }
     }
@@ -199,7 +207,9 @@ class BillingClientLifecycle private constructor(
      * Called by the Billing Library when new purchases are detected.
      */
     override fun onPurchasesUpdated(responseCode: Int, purchasesList: List<Purchase>?) {
-        Log.d(TAG, "onPurchasesUpdated, response code: $responseCode")
+        billingResponseNames[responseCode].let { name ->
+            Log.d(TAG, "onPurchasesUpdated: $responseCode $name")
+        }
         when (responseCode) {
             BillingClient.BillingResponse.OK -> {
                 if (purchasesList == null) {
@@ -223,7 +233,9 @@ class BillingClientLifecycle private constructor(
                         "signed with release keys.")
             }
             else -> {
-                Log.e(TAG, "See error code in BillingClient.BillingResponse: $responseCode")
+                billingResponseNames[responseCode].let { name ->
+                    Log.e(TAG, "BillingClient.BillingResponse: $responseCode $name")
+                }
             }
         }
     }
@@ -269,7 +281,9 @@ class BillingClientLifecycle private constructor(
             Log.e(TAG, "BillingClient is not ready to start billing flow")
         }
         val responseCode = billingClient.launchBillingFlow(activity, params)
-        Log.d(TAG, "Launch Billing Flow Response Code: $responseCode")
+        billingResponseNames[responseCode].let { name ->
+            Log.d(TAG, "BillingResponse from launchBillingFlow(): $responseCode $name")
+        }
         return responseCode
     }
 

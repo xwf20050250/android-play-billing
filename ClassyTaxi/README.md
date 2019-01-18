@@ -65,11 +65,19 @@ Classy Taxi is an end-to-end project that highlights subscription features on Go
 
     * Google Play Billing APIs require the SKUs to be configured in the console
 
-1. Optional: Do development with a debug APK on your device
+1. Optional: Test with a debug APK and debug signatures on your device
 
-    * **Development can happen with debug builds, as long as the package name matches the APK in the Play Store**
+    * Add your test Google account to the License Testing section of your Google Play Developer Account
 
-    * Release builds must be installed by Google Play, so **if you sideload a release build, the Google Play Billing APIs will not work**
+        * [https://developer.android.com/google/play/billing/billing_testing#testing-purchases](https://developer.android.com/google/play/billing/billing_testing#testing-purchases)
+
+        * [https://developer.android.com/google/play/billing/billing_testing#testing-subscriptions](https://developer.android.com/google/play/billing/billing_testing#testing-subscriptions)
+
+    * **License Testing accounts can use the Google Play Billing APIs with debug builds and debug signatures as long as the package name matches the APK in the Play Store**
+
+    * If the Google account is not enabled for License Testing, Google Play Billing APIs will only work if the app is installed by Google Play
+
+        * **Sideloaded APKs will not work for users that are not enabled for License Testing**
 
 1. Complete the **Play Developer Console Setup**
 
