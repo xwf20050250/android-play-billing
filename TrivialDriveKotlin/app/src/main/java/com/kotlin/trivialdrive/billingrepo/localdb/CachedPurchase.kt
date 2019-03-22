@@ -15,7 +15,11 @@
  */
 package com.kotlin.trivialdrive.billingrepo.localdb
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.Purchase
 import com.kotlin.trivialdrive.billingrepo.BillingRepository

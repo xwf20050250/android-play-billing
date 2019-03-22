@@ -23,30 +23,22 @@ import androidx.room.RoomDatabase
 
 @Database(entities = [CachedPurchase::class, GasTank::class, PremiumCar::class, GoldStatus::class, AugmentedSkuDetails::class],
         version = 1, exportSchema = false)
-abstract class CachedPurchaseDatabase : RoomDatabase() {
+abstract class LocalBillingDb : RoomDatabase() {
     abstract fun purchaseDao(): PurchaseDao
     abstract fun entitlementsDao(): EntitlementsDao
     abstract fun skuDetailsDao(): AugmentedSkuDetailsDao
 
     companion object {
         @Volatile
-        private var INSTANCE: CachedPurchaseDatabase? = null
+        private var INSTANCE: LocalBillingDb? = null
 
-        fun getInstance(context: Context): CachedPurchaseDatabase {
-            return INSTANCE
-                    ?: synchronized(this) {
-                        var instance = INSTANCE
-                        if (instance == null) {
-                            instance = Room.databaseBuilder(
-                                    context.applicationContext,
-                                    CachedPurchaseDatabase::class.java,
-                                    "purchase_db")
-                                    .fallbackToDestructiveMigration()//remote sources more reliable
-                                    .build()
-                            INSTANCE = instance
-                        }
-                        instance!!
-                    }
+        fun getInstance(context: Context): LocalBillingDb = INSTANCE?: synchronized(this) {
+            INSTANCE ?: Room.databaseBuilder(
+                    context.applicationContext,
+                    LocalBillingDb::class.java,
+                    "purchase_db")
+                    .fallbackToDestructiveMigration()//remote sources more reliable
+                    .build().also { INSTANCE=it }
         }
     }
 }
