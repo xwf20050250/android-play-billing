@@ -38,7 +38,7 @@ class BillingLocalDBTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var database: CachedPurchaseDatabase
+    private lateinit var database: LocalBillingDb
     private lateinit var purchaseDao: PurchaseDao
     private lateinit var entitlementsDao: EntitlementsDao
     private lateinit var skuDetailsDao: AugmentedSkuDetailsDao
@@ -49,7 +49,7 @@ class BillingLocalDBTest {
         // using an in-memory database because the information stored here disappears when the
         // process is killed
         database = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(),
-                CachedPurchaseDatabase::class.java!!)
+                LocalBillingDb::class.java!!)
                 // allowing main thread queries, just for testing
                 .allowMainThreadQueries()
                 .build()

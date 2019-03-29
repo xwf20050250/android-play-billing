@@ -88,5 +88,4 @@ dependencies {
     androidTestImplementation "androidx.annotation:annotation:$version_support"
     androidTestImplementation "androidx.legacy:legacy-support-v4:$version_support"
     androidTestImplementation "androidx.appcompat:appcompat:$version_support"
-//    androidTestImplementation "com.google.android.material:material:$version_support"
 }

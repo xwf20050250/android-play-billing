@@ -38,7 +38,12 @@ import android.text.TextUtils
 import android.util.Base64
 import android.util.Log
 import java.io.IOException
-import java.security.*
+import java.security.InvalidKeyException
+import java.security.KeyFactory
+import java.security.NoSuchAlgorithmException
+import java.security.PublicKey
+import java.security.Signature
+import java.security.SignatureException
 import java.security.spec.InvalidKeySpecException
 import java.security.spec.X509EncodedKeySpec
 
@@ -65,6 +70,7 @@ object Security {
      * want to make it easy for an attacker to replace the public key with one
      * of their own and then fake messages from the server.
      */
+
     val BASE_64_ENCODED_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArEaiCq7os9cmF" +
             "+i564+pIOiSOVZa/LRzu0K79Dg6wKWjnJ1PkHAa4ZOJ81KrxyFk3q3UiJ3lNsTCdW216+KKdKp+YCOFLs" +
             "sN+4FKjFBqY9lJbm6uuxZ9cPugMOTVFrVlmreYyhIY4jysfo4+LeyEmB7D20X7M+7diCRBEIsOY9lA2ne" +
@@ -82,10 +88,10 @@ object Security {
      * is invalid
      */
     @Throws(IOException::class)
-    fun verifyPurchase(base64PublicKey: String, signedData: String,
-                       signature: String): Boolean {
+    fun verifyPurchase(base64PublicKey: String, signedData: String, signature: String): Boolean {
         if ((TextUtils.isEmpty(signedData) || TextUtils.isEmpty(base64PublicKey)
-                        || TextUtils.isEmpty(signature))) {
+                        || TextUtils.isEmpty(signature))
+        ) {
             Log.w(TAG, "Purchase verification failed: missing data.")
             return false
         }

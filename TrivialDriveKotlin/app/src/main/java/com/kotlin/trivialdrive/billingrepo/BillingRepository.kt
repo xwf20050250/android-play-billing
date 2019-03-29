@@ -15,7 +15,6 @@
  */
 package com.kotlin.trivialdrive.billingrepo
 
-
 import android.app.Activity
 import android.app.Application
 import android.content.Context
@@ -23,7 +22,15 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.android.billingclient.api.*
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.ConsumeResponseListener
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.SkuDetailsParams
+import com.android.billingclient.api.SkuDetailsResponseListener
 import com.kotlin.trivialdrive.billingrepo.BillingRepository.GameSku.CONSUMABLE_SKUS
 import com.kotlin.trivialdrive.billingrepo.BillingRepository.GameSku.GOLD_STATUS_SKUS
 import com.kotlin.trivialdrive.billingrepo.BillingRepository.GameSku.INAPP_SKUS
@@ -33,9 +40,21 @@ import com.kotlin.trivialdrive.billingrepo.BillingRepository.RetryPolicies.reset
 import com.kotlin.trivialdrive.billingrepo.BillingRepository.RetryPolicies.taskExecutionRetryPolicy
 import com.kotlin.trivialdrive.billingrepo.BillingRepository.Throttle.isLastInvocationTimeStale
 import com.kotlin.trivialdrive.billingrepo.BillingRepository.Throttle.refreshLastInvocationTime
-import com.kotlin.trivialdrive.billingrepo.localdb.*
-import kotlinx.coroutines.*
-import java.util.*
+import com.kotlin.trivialdrive.billingrepo.localdb.AugmentedSkuDetails
+import com.kotlin.trivialdrive.billingrepo.localdb.Entitlement
+import com.kotlin.trivialdrive.billingrepo.localdb.GAS_PURCHASE
+import com.kotlin.trivialdrive.billingrepo.localdb.GasTank
+import com.kotlin.trivialdrive.billingrepo.localdb.GoldStatus
+import com.kotlin.trivialdrive.billingrepo.localdb.LocalBillingDb
+import com.kotlin.trivialdrive.billingrepo.localdb.PremiumCar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Date
+import java.util.HashSet
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.pow
 
@@ -44,7 +63,7 @@ import kotlin.math.pow
  *
  * To avoid ambiguity and for simplified readability:
  *
- *  - the term "user" (except where obvious?) shall refer to people who download the app and buy
+ *  - the term "user" shall refer to people who download the app and buy
  *    products or subscriptions.
  *
  *  - the term "client" shall refer to those developers/engineers on the team who depend on the
@@ -190,7 +209,6 @@ class BillingRepository private constructor(private val application: Application
         PurchasesUpdatedListener, BillingClientStateListener,
         ConsumeResponseListener, SkuDetailsResponseListener {
 
-
     /**
      * The Play [BillingClient] is the most reliable and primary source of truth for all purchases
      * made through the Play Store. The Play Store takes security precautions in guarding the data.
@@ -231,7 +249,6 @@ class BillingRepository private constructor(private val application: Application
      */
     lateinit private var secureServerBillingClient: BillingWebservice
 
-
     /**
      * A local cache billing client is important in that both the Play Store and the secure server
      * may be temporarily unavailable: the Play Store may be unavailable during updates and
@@ -247,14 +264,14 @@ class BillingRepository private constructor(private val application: Application
      * The data that lives here should be refreshed at regular intervals so that it reflects what's
      * on the secure server and the Google Play Store.
      */
-    lateinit private var localCacheBillingClient: CachedPurchaseDatabase
+    lateinit private var localCacheBillingClient: LocalBillingDb
 
     /**
      * This list tells clients what subscriptions are available for sale
      */
     val subsSkuDetailsListLiveData: LiveData<List<AugmentedSkuDetails>> by lazy {
         if (::localCacheBillingClient.isInitialized == false) {
-            localCacheBillingClient = CachedPurchaseDatabase.getInstance(application)
+            localCacheBillingClient = LocalBillingDb.getInstance(application)
         }
         localCacheBillingClient.skuDetailsDao().getSubscriptionSkuDetails()
     }
@@ -264,7 +281,7 @@ class BillingRepository private constructor(private val application: Application
      */
     val inappSkuDetailsListLiveData: LiveData<List<AugmentedSkuDetails>> by lazy {
         if (::localCacheBillingClient.isInitialized == false) {
-            localCacheBillingClient = CachedPurchaseDatabase.getInstance(application)
+            localCacheBillingClient = LocalBillingDb.getInstance(application)
         }
         localCacheBillingClient.skuDetailsDao().getInappSkuDetails()
     }
@@ -307,20 +324,20 @@ class BillingRepository private constructor(private val application: Application
     /**
      * Tracks how much gas the user owns. Because this is a [LiveData] item, clients will know
      * immediately when purchases are awarded to this user.
-     *
+     *wr
      * __An Important Note:__
      * Technically, you could simply return `val gasLevel: LiveData<Int>` to clients and let them
-     * figure out how to use it. But in the spirit of being kind, you may choose to return a custom
-     * data type called [GasTank], which will encapsulate the facts that, in this app, gas level
-     * has a lower bound of 0 and an upper bound of 4. This way, clients will know exactly when
-     * the user is not allowed to make a purchase and when the user needs to make a purchase.
-     * Always err on the side of doing the right thing for the clients of your API.
+     * figure out how to use it. You may choose to return a custom data type called [GasTank],
+     * which will encapsulate the fact that, in this app, gas level has a lower bound of 0 and an
+     * upper bound of 4. This way, clients will know exactly when the user is not allowed to make a
+     * purchase and when the user needs to make a purchase. Always err on the side of doing the
+     * right thing for the clients of your API.
      *
      * @See [GasTank]
      */
     val gasTankLiveData: LiveData<GasTank> by lazy {
         if (::localCacheBillingClient.isInitialized == false) {
-            localCacheBillingClient = CachedPurchaseDatabase.getInstance(application)
+            localCacheBillingClient = LocalBillingDb.getInstance(application)
         }
         localCacheBillingClient.entitlementsDao().getGasTank()
     }
@@ -334,7 +351,7 @@ class BillingRepository private constructor(private val application: Application
      */
     val premiumCarLiveData: LiveData<PremiumCar> by lazy {
         if (::localCacheBillingClient.isInitialized == false) {
-            localCacheBillingClient = CachedPurchaseDatabase.getInstance(application)
+            localCacheBillingClient = LocalBillingDb.getInstance(application)
         }
         localCacheBillingClient.entitlementsDao().getPremiumCar()
     }
@@ -348,7 +365,7 @@ class BillingRepository private constructor(private val application: Application
      */
     val goldStatusLiveData: LiveData<GoldStatus> by lazy {
         if (::localCacheBillingClient.isInitialized == false) {
-            localCacheBillingClient = CachedPurchaseDatabase.getInstance(application)
+            localCacheBillingClient = LocalBillingDb.getInstance(application)
         }
         localCacheBillingClient.entitlementsDao().getGoldStatus()
     }
@@ -356,8 +373,8 @@ class BillingRepository private constructor(private val application: Application
     //END list of each distinct item user may own (i.e. entitlements)
 
     /**
-     * Correlated data sources necessarily belong inside a repository module so that --
-     * as mentioned above -- the rest of the app can have effortless access to the data it needs.
+     * Correlated data sources necessarily belong inside a repository module so that the rest of
+     * the app can have effortless access to the data it needs.
      * Still, it may be effective to track the opening (and sometimes closing) of data source
      * connections based on lifecycle events. One convenient way of doing that is by calling this
      * [startDataSourceConnections] when the [BillingViewModel] is instantiated and
@@ -367,7 +384,7 @@ class BillingRepository private constructor(private val application: Application
         Log.d(LOG_TAG, "startDataSourceConnections")
         instantiateAndConnectToPlayBillingService()
         secureServerBillingClient = BillingWebservice.create()
-        localCacheBillingClient = CachedPurchaseDatabase.getInstance(application)
+        localCacheBillingClient = LocalBillingDb.getInstance(application)
     }
 
     fun endDataSourceConnections() {
@@ -415,7 +432,6 @@ class BillingRepository private constructor(private val application: Application
                 Log.d(LOG_TAG, "onBillingSetupFinished with failure response code: $responseCode")
             }
         }
-
     }
 
     /**
@@ -495,31 +511,37 @@ class BillingRepository private constructor(private val application: Application
         taskExecutionRetryPolicy(playStoreBillingClient, this) { task() }
     }
 
-    private fun processPurchases(purchasesResult: Set<Purchase>) = CoroutineScope(Job() + Dispatchers.IO).launch {
-        val cachedPurchases = localCacheBillingClient.purchaseDao().getPurchases()
-        val newBatch = HashSet<Purchase>(purchasesResult.size)
-        purchasesResult.forEach { purchase ->
-            if (isSignatureValid(purchase) && !cachedPurchases.any { it.data == purchase }) {//todo !cachedPurchases.contains(purchase)
-                newBatch.add(purchase)
-            }
-        }
+    private fun processPurchases(purchasesResult: Set<Purchase>) =
+            CoroutineScope(Job() + Dispatchers.IO).launch {
+                val cachedPurchases = localCacheBillingClient.purchaseDao().getPurchases()
+                val newBatch = HashSet<Purchase>(purchasesResult.size)
+                purchasesResult.forEach { purchase ->
+                    if (isSignatureValid(
+                                    purchase
+                            ) && !cachedPurchases.any { it.data == purchase }
+                    ) {//todo !cachedPurchases.contains(purchase)
+                        newBatch.add(purchase)
+                    }
+                }
 
-        if (newBatch.isNotEmpty()) {
-            sendPurchasesToServer(newBatch)
-            // We still care about purchasesResult in case a old purchase has not yet been consumed.
-            saveToLocalDatabase(newBatch, purchasesResult)
-            //consumeAsync(purchasesResult): do this inside saveToLocalDatabase to avoid race condition
-        } else if (isLastInvocationTimeStale(application)) {
-            handleConsumablePurchasesAsync(purchasesResult)
-            queryPurchasesFromSecureServer()
-        }
-    }
+                if (newBatch.isNotEmpty()) {
+                    sendPurchasesToServer(newBatch)
+                    // We still care about purchasesResult in case a old purchase has not yet been consumed.
+                    saveToLocalDatabase(newBatch, purchasesResult)
+                    //consumeAsync(purchasesResult): do this inside saveToLocalDatabase to avoid race condition
+                } else if (isLastInvocationTimeStale(application)) {
+                    handleConsumablePurchasesAsync(purchasesResult)
+                    queryPurchasesFromSecureServer()
+                }
+            }
 
     /**
      * Ideally this check should be done on the secure server. @see [Security]
      */
     private fun isSignatureValid(purchase: Purchase): Boolean {
-        return Security.verifyPurchase(Security.BASE_64_ENCODED_PUBLIC_KEY, purchase.originalJson, purchase.signature)
+        return Security.verifyPurchase(
+                Security.BASE_64_ENCODED_PUBLIC_KEY, purchase.originalJson, purchase.signature
+        )
     }
 
     /**
@@ -587,7 +609,6 @@ class BillingRepository private constructor(private val application: Application
         //TODO: FIXME: Again, this is not a real implementation. You must implement this yourself
     }
 
-
     private fun sendPurchasesToServer(purchases: Set<Purchase>) {
         /*
         TODO if you have a server:
@@ -628,7 +649,10 @@ class BillingRepository private constructor(private val application: Application
             if (GameSku.CONSUMABLE_SKUS.contains(it.sku)) {
                 playStoreBillingClient.consumeAsync(it.purchaseToken, this@BillingRepository)
                 //tell your server:
-                Log.i(LOG_TAG, "handleConsumablePurchasesAsync: asked Play Billing to consume sku = ${it.sku}")
+                Log.i(
+                        LOG_TAG,
+                        "handleConsumablePurchasesAsync: asked Play Billing to consume sku = ${it.sku}"
+                )
             }
         }
     }
@@ -637,7 +661,8 @@ class BillingRepository private constructor(private val application: Application
      * Checks if the user's device supports subscriptions
      */
     private fun isSubscriptionSupported(): Boolean {
-        val responseCode = playStoreBillingClient.isFeatureSupported(BillingClient.FeatureType.SUBSCRIPTIONS)
+        val responseCode =
+                playStoreBillingClient.isFeatureSupported(BillingClient.FeatureType.SUBSCRIPTIONS)
         if (responseCode != BillingClient.BillingResponse.OK) {
             Log.w(LOG_TAG, "isSubscriptionSupported() got an error response: $responseCode")
         }
@@ -651,7 +676,9 @@ class BillingRepository private constructor(private val application: Application
      *
      * The result is passed to [onSkuDetailsResponse]
      */
-    private fun querySkuDetailsAsync(@BillingClient.SkuType skuType: String, skuList: List<String>) {
+    private fun querySkuDetailsAsync(
+            @BillingClient.SkuType skuType: String, skuList: List<String>
+    ) {
         val params = SkuDetailsParams.newBuilder()
         params.setSkusList(skuList).setType(skuType)
         taskExecutionRetryPolicy(playStoreBillingClient, this) {
@@ -675,7 +702,9 @@ class BillingRepository private constructor(private val application: Application
         if (skuDetailsList.orEmpty().isNotEmpty()) {
             val scope = CoroutineScope(Job() + Dispatchers.IO)
             scope.launch {
-                skuDetailsList?.forEach { localCacheBillingClient.skuDetailsDao().insertOrUpdate(it) }
+                skuDetailsList?.forEach {
+                    localCacheBillingClient.skuDetailsDao().insertOrUpdate(it)
+                }
             }
         }
     }
@@ -748,9 +777,11 @@ class BillingRepository private constructor(private val application: Application
                 queryPurchasesAsync()
             }
             BillingClient.BillingResponse.DEVELOPER_ERROR -> {
-                Log.e(LOG_TAG, "Your app's configuration is incorrect. Review in the Google Play" +
+                Log.e(
+                        LOG_TAG, "Your app's configuration is incorrect. Review in the Google Play" +
                         "Console. Possible causes of this error include: APK is not signed with " +
-                        "release key; SKU productId mismatch.")
+                        "release key; SKU productId mismatch."
+                )
             }
             else -> {
                 Log.i(LOG_TAG, "BillingClient.BillingResponse error code: $responseCode")
@@ -773,8 +804,10 @@ class BillingRepository private constructor(private val application: Application
                 secureServerBillingClient.onComsumeResponse(purchaseToken, responseCode)
             }
             else -> {
-                Log.w(LOG_TAG, "Error consuming purchase with token ($purchaseToken). " +
-                        "Response code: $responseCode")
+                Log.w(
+                        LOG_TAG, "Error consuming purchase with token ($purchaseToken). " +
+                        "Response code: $responseCode"
+                )
             }
         }
     }
@@ -805,17 +838,20 @@ class BillingRepository private constructor(private val application: Application
                     GameSku.PREMIUM_CAR -> {
                         val premiumCar = PremiumCar(true)
                         insert(premiumCar)
-                        localCacheBillingClient.skuDetailsDao().insertOrUpdate(purchase.sku, premiumCar.mayPurchase())
+                        localCacheBillingClient.skuDetailsDao()
+                                .insertOrUpdate(purchase.sku, premiumCar.mayPurchase())
                     }
                     GameSku.GOLD_MONTHLY, GameSku.GOLD_YEARLY -> {
                         val goldStatus = GoldStatus(true)
                         insert(goldStatus)
-                        localCacheBillingClient.skuDetailsDao().insertOrUpdate(purchase.sku, goldStatus.mayPurchase())
+                        localCacheBillingClient.skuDetailsDao()
+                                .insertOrUpdate(purchase.sku, goldStatus.mayPurchase())
                         /*there are more than one way to buy gold status. After disabling the one the user
                         * just purchased, re-enble the others*/
                         GOLD_STATUS_SKUS.forEach { otherSku ->
                             if (otherSku != purchase.sku) {
-                                localCacheBillingClient.skuDetailsDao().insertOrUpdate(otherSku, !goldStatus.mayPurchase())
+                                localCacheBillingClient.skuDetailsDao()
+                                        .insertOrUpdate(otherSku, !goldStatus.mayPurchase())
                             }
                         }
                     }
@@ -872,7 +908,10 @@ class BillingRepository private constructor(private val application: Application
                 if (this != gas) {//new purchase
                     update = GasTank(getLevel() + gas.getLevel())
                 }
-                Log.d(LOG_TAG, "New purchase level is ${gas.getLevel()}; existing level is ${getLevel()}; so the final result is ${update.getLevel()}")
+                Log.d(
+                        LOG_TAG,
+                        "New purchase level is ${gas.getLevel()}; existing level is ${getLevel()}; so the final result is ${update.getLevel()}"
+                )
                 localCacheBillingClient.entitlementsDao().update(update)
             }
         }
@@ -901,7 +940,6 @@ class BillingRepository private constructor(private val application: Application
                             ?: BillingRepository(application)
                                     .also { INSTANCE = it }
                 }
-
     }
 
     /**
@@ -962,14 +1000,17 @@ class BillingRepository private constructor(private val application: Application
                     block()
                 }
             }
-
         }
 
         /**
          * All this is doing is check that billingClient is connected and if it's not, request
          * connection, wait x number of seconds and then proceed with the actual task.
          */
-        fun taskExecutionRetryPolicy(billingClient: BillingClient, listener: BillingRepository, task: () -> Unit) {
+        fun taskExecutionRetryPolicy(
+                billingClient: BillingClient,
+                listener: BillingRepository,
+                task: () -> Unit
+        ) {
             val scope = CoroutineScope(Job() + Dispatchers.Main)
             scope.launch {
                 if (!billingClient.isReady) {
@@ -985,8 +1026,8 @@ class BillingRepository private constructor(private val application: Application
     /**
      * [INAPP_SKUS], [SUBS_SKUS], [CONSUMABLE_SKUS]:
      *
-     * Where you define these lists is quite truly up to you. If you don't need customization, then
-     * it makes since to define and hardcode them here, as I am doing. Keep simple things simple.
+     * Where you define these lists is up to you. If you don't need customization, then
+     * it makes sence to define and hardcode them here.
      * But there are use cases where you may need customization:
      *
      * - If you don't want to update your APK (or Bundle) each time you change your SKUs, then you
