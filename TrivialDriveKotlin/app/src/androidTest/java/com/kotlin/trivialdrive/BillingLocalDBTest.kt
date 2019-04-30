@@ -15,22 +15,30 @@
  */
 package com.kotlin.trivialdrive
 
-
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.room.Room
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
+import com.kotlin.trivialdrive.billingrepo.localdb.AugmentedSkuDetailsDao
+import com.kotlin.trivialdrive.billingrepo.localdb.EntitlementsDao
+import com.kotlin.trivialdrive.billingrepo.localdb.GasTank
+import com.kotlin.trivialdrive.billingrepo.localdb.GoldStatus
+import com.kotlin.trivialdrive.billingrepo.localdb.LocalBillingDb
+import com.kotlin.trivialdrive.billingrepo.localdb.PremiumCar
+import com.kotlin.trivialdrive.billingrepo.localdb.PurchaseDao
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.kotlin.trivialdrive.billingrepo.localdb.*
-import org.junit.Assert.*
 
 @RunWith(AndroidJUnit4::class)
 class BillingLocalDBTest {
@@ -48,11 +56,10 @@ class BillingLocalDBTest {
     fun initDb() {
         // using an in-memory database because the information stored here disappears when the
         // process is killed
-        database = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(),
-                LocalBillingDb::class.java!!)
-                // allowing main thread queries, just for testing
-                .allowMainThreadQueries()
-                .build()
+        database = Room.inMemoryDatabaseBuilder(
+                InstrumentationRegistry.getContext(),
+                LocalBillingDb::class.java
+        ).allowMainThreadQueries().build() // allowing main thread queries, just for testing
 
         purchaseDao = database.purchaseDao()
         entitlementsDao = database.entitlementsDao()
@@ -125,9 +132,6 @@ class BillingLocalDBTest {
         assertTrue(premiumCar.entitled)
     }
 
-
-
-
     /**
      * This method receives a [LiveData] as parameter, observes it, and return its content.
      * This method is "necessary" because the -Dao methods return LiveData objects.
@@ -150,6 +154,4 @@ class BillingLocalDBTest {
         latch.await(2, TimeUnit.SECONDS)
         return data[0] as T
     }
-
-
 }

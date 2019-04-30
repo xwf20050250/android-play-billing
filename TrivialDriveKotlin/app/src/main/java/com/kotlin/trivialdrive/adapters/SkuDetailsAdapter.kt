@@ -22,7 +22,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kotlin.trivialdrive.R
 import com.kotlin.trivialdrive.billingrepo.localdb.AugmentedSkuDetails
-import kotlinx.android.synthetic.main.inventory_item.view.*
+import kotlinx.android.synthetic.main.inventory_item.view.sku_description
+import kotlinx.android.synthetic.main.inventory_item.view.sku_image
+import kotlinx.android.synthetic.main.inventory_item.view.sku_price
+import kotlinx.android.synthetic.main.inventory_item.view.sku_title
 
 /**
  * This is an [AugmentedSkuDetails] adapter. It can be used anywhere there is a need to display a
@@ -36,7 +39,9 @@ open class SkuDetailsAdapter : RecyclerView.Adapter<SkuDetailsAdapter.SkuDetails
     override fun getItemCount() = skuDetailsList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SkuDetailsViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.inventory_item, parent, false)
+        val itemView = LayoutInflater.from(parent.context).inflate(
+                R.layout.inventory_item, parent, false
+        )
         return SkuDetailsViewHolder(itemView)
     }
 
@@ -105,7 +110,7 @@ open class SkuDetailsAdapter : RecyclerView.Adapter<SkuDetailsAdapter.SkuDetails
         }
 
         /**
-         *Keeping simple things simple, the icons are named after the SKUs. This way, there is no
+         * Keeping simple things simple, the icons are named after the SKUs. This way, there is no
          * need to create some elaborate system for matching icons to SKUs when displaying the
          * inventory to users. It is sufficient to do
          *

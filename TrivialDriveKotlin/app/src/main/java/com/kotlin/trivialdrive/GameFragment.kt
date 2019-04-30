@@ -17,6 +17,7 @@ package com.kotlin.trivialdrive
 
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +27,11 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import com.kotlin.trivialdrive.billingrepo.localdb.GasTank
 import com.kotlin.trivialdrive.viewmodels.BillingViewModel
-import kotlinx.android.synthetic.main.fragment_game.*
+import kotlinx.android.synthetic.main.fragment_game.btn_drive
+import kotlinx.android.synthetic.main.fragment_game.btn_purchase
+import kotlinx.android.synthetic.main.fragment_game.free_or_premium_car
+import kotlinx.android.synthetic.main.fragment_game.gas_gauge
+import kotlinx.android.synthetic.main.fragment_game.gold_status
 
 /**
  * This Fragment represents the game world. Hence it contains logic to display the items the user
@@ -43,7 +48,11 @@ class GameFragment : androidx.fragment.app.Fragment() {
     private var gasLevel: GasTank? = null
     private lateinit var billingViewModel: BillingViewModel
 
-    override fun onCreateView(inflater: LayoutInflater, containter: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            containter: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_game, containter, false)
     }
 
@@ -56,6 +65,7 @@ class GameFragment : androidx.fragment.app.Fragment() {
         billingViewModel = ViewModelProviders.of(this).get(BillingViewModel::class.java)
         billingViewModel.gasTankLiveData.observe(this, Observer {
             gasLevel = it
+            Log.d(LOG_TAG,"showGasLevel called from billingViewModel with level ${it?.getLevel()}")
             showGasLevel()
         })
         billingViewModel.premiumCarLiveData.observe(this, Observer {
@@ -85,8 +95,13 @@ class GameFragment : androidx.fragment.app.Fragment() {
 
     private fun showGasLevel() {
         gasLevel?.apply {
+            Log.d(LOG_TAG,"showGasLevel called with level ${getLevel()} ")
             val drawableName = "gas_level_${getLevel()}"
-            val drawableId = resources.getIdentifier(drawableName, "drawable", requireActivity().packageName)
+            val drawableId = resources.getIdentifier(
+                    drawableName,
+                    "drawable",
+                    requireActivity().packageName
+            )
             gas_gauge.setImageResource(drawableId)
         }
         if (gasLevel == null) {

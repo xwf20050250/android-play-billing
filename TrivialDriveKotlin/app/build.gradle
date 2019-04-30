@@ -60,6 +60,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt 'androidx.lifecycle:lifecycle-compiler:2.0.0'
     implementation "com.android.billingclient:billing:$version_billing"
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version_kotlin"
     implementation 'androidx.appcompat:appcompat:1.0.2'
