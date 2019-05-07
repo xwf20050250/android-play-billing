@@ -37,7 +37,7 @@ import androidx.room.PrimaryKey
 
 private const val FULL_TANK = 4
 private const val EMPTY_TANK = 0
-const val GAS_PURCHASE=1
+const val GAS_PURCHASE = 1
 
 /**
  * Normally this would just be an interface. But since each of the entitlements only has
@@ -97,5 +97,4 @@ class GasTank(private var level: Int) : Entitlement() {
     fun decrement(by: Int = 1) {
         level -= by
     }
-
 }

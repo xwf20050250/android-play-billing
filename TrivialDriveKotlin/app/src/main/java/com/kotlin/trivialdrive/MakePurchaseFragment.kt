@@ -31,7 +31,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kotlin.trivialdrive.adapters.SkuDetailsAdapter
 import com.kotlin.trivialdrive.billingrepo.localdb.AugmentedSkuDetails
 import com.kotlin.trivialdrive.viewmodels.BillingViewModel
-import kotlinx.android.synthetic.main.fragment_make_purchase.view.*
+import kotlinx.android.synthetic.main.fragment_make_purchase.view.inapp_inventory
+import kotlinx.android.synthetic.main.fragment_make_purchase.view.subs_inventory
 
 /**
  * This Fragment is simply a wrapper for the inventory (i.e. items for sale). It contains two
@@ -46,7 +47,11 @@ class MakePurchaseFragment : Fragment() {
     val LOG_TAG = "MakePurchaseFragment"
     private lateinit var billingViewModel: BillingViewModel
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View {
         return inflater.inflate(R.layout.fragment_make_purchase, container, false)
     }
 
@@ -87,7 +92,6 @@ class MakePurchaseFragment : Fragment() {
 
     private fun onPurchase(view: View, item: AugmentedSkuDetails) {
         billingViewModel.makePurchase(activity as Activity, item)
-        view.findNavController().navigate(R.id.action_playGame)
         Log.d(LOG_TAG, "starting purchase flow for SkuDetail:\n ${item}")
     }
 }

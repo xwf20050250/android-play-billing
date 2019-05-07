@@ -46,8 +46,8 @@ interface AugmentedSkuDetailsDao {
         val result = getById(sku)
         val bool = if (result == null) true else result.canPurchase
         val originalJson = toString().substring("SkuDetails: ".length)
-        val skuDetails = AugmentedSkuDetails(bool, sku, type, price, title, description, originalJson)
-        insert(skuDetails)
+        val detail = AugmentedSkuDetails(bool, sku, type, price, title, description, originalJson)
+        insert(detail)
     }
 
     @Transaction
@@ -61,7 +61,7 @@ interface AugmentedSkuDetailsDao {
     }
 
     @Query("SELECT * FROM AugmentedSkuDetails WHERE sku = :sku")
-    fun getById(sku: String): AugmentedSkuDetails
+    fun getById(sku: String): AugmentedSkuDetails?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(augmentedSkuDetails: AugmentedSkuDetails)
