@@ -15,18 +15,22 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.subscriptions">
 
     <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
         android:name=".SubApp"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
 
         <activity
             android:name=".ui.MainActivity"
@@ -39,13 +43,18 @@
         </activity>
 
         <service
-            android:name=".InstanceIDService">
+            android:name=".InstanceIDService"
+            android:exported="true"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
 
-        <service android:name="com.example.subscriptions.data.network.firebase.SubscriptionMessageService">
+        <service
+            android:name=".data.network.firebase.SubscriptionMessageService"
+            android:exported="true"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
