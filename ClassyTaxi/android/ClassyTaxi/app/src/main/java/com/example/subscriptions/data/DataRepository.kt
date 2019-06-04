@@ -99,16 +99,19 @@ class DataRepository private constructor(
         })
     }
 
-    fun updateSubscriptionsFromNetwork(subscriptionList: List<SubscriptionStatus>?) {
+    fun updateSubscriptionsFromNetwork(remoteSubscriptions: List<SubscriptionStatus>?) {
         val oldSubscriptions = subscriptions.value
         val purchases = billingClientLifecycle.purchases.value
         val subscriptions =
-                mergeSubscriptionsAndPurchases(oldSubscriptions, subscriptionList, purchases)
+                mergeSubscriptionsAndPurchases(oldSubscriptions, remoteSubscriptions, purchases)
+        remoteSubscriptions?.let {
+            acknowledgeRegisteredPurchaseTokens(remoteSubscriptions)
+        }
         // Store the subscription information when it changes.
         localDataSource.updateSubscriptions(subscriptions)
 
         // Update the content when the subscription changes.
-        subscriptionList?.let {
+        remoteSubscriptions?.let {
             // Figure out which content we need to fetch.
             var updateBasic = false
             var updatePremium = false
@@ -138,6 +141,19 @@ class DataRepository private constructor(
             } else {
                 // If we no longer own this content, clear it from the UI.
                 premiumContent.postValue(null)
+            }
+        }
+    }
+
+    /**
+     * Acknowledge subscriptions that have been registered by the server.
+     */
+    private fun acknowledgeRegisteredPurchaseTokens(
+            remoteSubscriptions: List<SubscriptionStatus>
+    ) {
+        for (remoteSubscription in remoteSubscriptions) {
+            remoteSubscription.purchaseToken?.let { purchaseToken ->
+                billingClientLifecycle.acknowledgePurchase(purchaseToken)
             }
         }
     }

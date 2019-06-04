@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshData() {
-        billingClientLifecycle.updatePurchases()
+        billingClientLifecycle.queryPurchases()
         subscriptionViewModel.manualRefresh()
     }
 
