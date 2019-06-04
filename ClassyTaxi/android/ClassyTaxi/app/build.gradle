@@ -35,17 +35,10 @@ android {
         enabled = true
     }
     signingConfigs {
-//          Some of the features in this application require the signing key of the APK
-//          to be registered in the Firebase Console. You can uncomment the lines below
-//          to use the release signing key, or you can specify different key information here.
-//          You will also need to update the `buildTypes` configuration below.
-//
-//        debug {
-//            storeFile keystoreStoreFile
-//            storePassword keystoreStorePassword
-//            keyAlias keystoreKeyAlias
-//            keyPassword keystoreKeyPassword
-//        }
+//      Some of the features in this application require the signing key of the APK
+//      to be registered in the Firebase Console. You can specify debug key information here.
+        debug {
+        }
         release {
             storeFile keystoreStoreFile
             storePassword keystoreStorePassword
@@ -55,12 +48,10 @@ android {
     }
     buildTypes {
         debug {
-//            Some of the features in this application require the signing key of the APK
-//            to be registered in the Firebase Console. You can register your debug key signature
-//            in the Firebase Console, update the `signingConfigs` configuration above,
-//            and uncomment the line here.
-//
-//          signingConfig signingConfigs.debug
+//          Some of the features in this application require the signing key of the APK
+//          to be registered in the Firebase Console. You can register your debug key signature
+//          in the Firebase Console and update the `signingConfigs` configuration above.
+            signingConfig signingConfigs.debug
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
