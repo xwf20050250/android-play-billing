@@ -76,4 +76,9 @@
     <string name="subscription_option_premium_message_account_hold">Premium plan (on hold)</string>
     <string name="subscription_option_premium_message_grace_period">Premium plan (payment issue)</string>
     <string name="subscription_option_premium_message_restore">Premium plan (canceled)</string>
+
+    <!-- Manage subscriptions guided step on Android TV -->
+    <string name="done">Done</string>
+    <string name="manage_subscription_scan_qr_code">Scan QR code with your mobile device.</string>
+
 </resources>

@@ -16,7 +16,6 @@
 
 package com.example.subscriptions.ui
 
-import android.content.res.Resources
 import android.databinding.BindingAdapter
 import android.util.Log
 import android.view.View
@@ -32,6 +31,8 @@ import com.example.subscriptions.billing.isSubscriptionRestore
 import com.example.subscriptions.billing.isTransferRequired
 import com.example.subscriptions.data.ContentResource
 import com.example.subscriptions.data.SubscriptionStatus
+import com.example.subscriptions.utils.basicTextForSubscription
+import com.example.subscriptions.utils.premiumTextForSubscription
 import kotlinx.android.synthetic.main.fragment_home.view.home_account_hold_message
 import kotlinx.android.synthetic.main.fragment_home.view.home_basic_image
 import kotlinx.android.synthetic.main.fragment_home.view.home_basic_message
@@ -325,56 +326,6 @@ fun updateSettingsViews(view: View, subscriptions: List<SubscriptionStatus>?) {
     } else {
         view.settings_transfer_message_text.text =
                 view.resources.getString(R.string.transfer_message)
-    }
-}
-
-/**
- * Return the resource string for the basic subscription button.
- *
- * Add an asterisk if the subscription is not local and might not be modifiable on this device.
- */
-private fun basicTextForSubscription(res: Resources, subscription: SubscriptionStatus): String {
-    val text = if (isAccountHold(subscription)) {
-        res.getString(R.string.subscription_option_basic_message_account_hold)
-    } else if (isGracePeriod(subscription)) {
-        res.getString(R.string.subscription_option_basic_message_grace_period)
-    } else if (isSubscriptionRestore(subscription)) {
-        res.getString(R.string.subscription_option_basic_message_restore)
-    } else if (isBasicContent(subscription)) {
-        res.getString(R.string.subscription_option_basic_message_current)
-    } else {
-        res.getString(R.string.subscription_option_basic_message)
-    }
-    return if (subscription.isLocalPurchase) {
-        text
-    } else {
-        // No local record, so the subscription cannot be managed on this device.
-        text + "*"
-    }
-}
-
-/**
- * Return the resource string for the premium subscription button.
- *
- * Add an asterisk if the subscription is not local and might not be modifiable on this device.
- */
-private fun premiumTextForSubscription(res: Resources, subscription: SubscriptionStatus): String {
-    val text = if (isAccountHold(subscription)) {
-        res.getString(R.string.subscription_option_premium_message_account_hold)
-    } else if (isGracePeriod(subscription)) {
-        res.getString(R.string.subscription_option_premium_message_grace_period)
-    } else if (isSubscriptionRestore(subscription)) {
-        res.getString(R.string.subscription_option_premium_message_restore)
-    } else if (isPremiumContent(subscription)) {
-        res.getString(R.string.subscription_option_premium_message_current)
-    } else {
-        res.getString(R.string.subscription_option_premium_message)
-    }
-    return if (subscription.isLocalPurchase) {
-        text
-    } else {
-        // No local record, so the subscription cannot be managed on this device.
-        text + "*"
     }
 }
 
