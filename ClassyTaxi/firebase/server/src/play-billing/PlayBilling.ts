@@ -67,7 +67,7 @@ export default class PlayBilling {
       null
     );
     const playDeveloperApiClient = google.androidpublisher({
-      version: 'v2',
+      version: 'v3',
       auth: jwtClient
     });
 
