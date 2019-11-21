@@ -296,8 +296,8 @@ import java.util.HashSet
  *
  * 2. [onPurchasesUpdated] is the callback that the Play [BillingClient] calls in response to its
  *    [launcBillingFlow][BillingClient.launchBillingFlow] being called. If the response code is
- *    [BillingResponse.OK], then developers may go straight to [processPurchases]. If, however, the
- *    response code is [BillingResponse.ITEM_ALREADY_OWNED], then developers should call
+ *    [BillingClient.BillingResponseCode.OK], then developers may go straight to [processPurchases]. If, however, the
+ *    response code is [BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED], then developers should call
  *    [queryPurchasesAsync] to verify if other such already-owned items exist that should be
  *    processed.
  *
