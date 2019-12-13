@@ -43,5 +43,5 @@ captures/
 *.jks
 
 # Google Services
-google-services.json
+app/src/main/google-services.json
 
