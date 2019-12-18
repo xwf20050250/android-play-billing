@@ -107,6 +107,19 @@ dependencies {
     // Kotlin annotation processor for Room.
     kapt "android.arch.persistence.room:compiler:$archRoomVersion"
 
+    // Necessary for compiling on environments running JDK9+
+    compileOnly "com.github.pengrad:jdk9-deps:$jdk9DepsVersion"
+
+    if (project.hasProperty('kapt')) {
+        kapt "javax.xml.bind:jaxb-api:$jaxbApiVersion"
+        kapt "com.sun.xml.bind:jaxb-core:$jaxbCoreVersion"
+        kapt "com.sun.xml.bind:jaxb-impl:$jaxbImpl"
+    }
+
+    annotationProcessor "javax.xml.bind:jaxb-api:$jaxbApiVersion"
+    annotationProcessor "com.sun.xml.bind:jaxb-core:$jaxbCoreVersion"
+    annotationProcessor "com.sun.xml.bind:jaxb-impl:$jaxbImpl"
+
     // Test dependencies.
     testImplementation "junit:junit:$jUnitVersion"
 }
