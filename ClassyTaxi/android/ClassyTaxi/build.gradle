@@ -70,6 +70,12 @@ buildscript {
     ext.gradleToolsVersion = '3.4.1'
     ext.kotlinVersion = '1.3.11'
 
+    // jaxb versions for compiling for JDK9+
+    ext.jdk9DepsVersion = '1.0'
+    ext.jaxbApiVersion = '2.3.1'
+    ext.jaxbCoreVersion = '2.3.0.1'
+    ext.jaxbImpl = '2.3.2'
+
     // Testing versions.
     ext.jUnitVersion = '4.12'
 
