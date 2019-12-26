@@ -21,7 +21,6 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion androidCompileSdkVersion as Integer
-    buildToolsVersion androidBuildToolsVersion
     defaultConfig {
         // The applicationId should be set in the project gradle.properties files.
         applicationId androidApplicationId
