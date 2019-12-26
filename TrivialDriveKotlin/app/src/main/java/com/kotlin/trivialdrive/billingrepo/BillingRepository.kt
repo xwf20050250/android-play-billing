@@ -792,7 +792,7 @@ class BillingRepository private constructor(private val application: Application
             goldStatusLiveData.value?.apply {
                 result = when (sku) {
                     GameSku.GOLD_MONTHLY -> GameSku.GOLD_YEARLY
-                    else -> GameSku.GOLD_YEARLY
+                    else -> GameSku.GOLD_MONTHLY
                 }
             }
         }
