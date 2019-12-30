@@ -3,7 +3,8 @@
 Sample applications for Google Play Billing. To build each sample, see the README instructions in the project directory.
 
 * [Trivial Drive Kotlin](https://github.com/android/play-billing-samples/tree/master/TrivialDriveKotlin) - Purchase items in your Android app.
-* [Classy Taxi](https://github.com/android/play-billing-samples/tree/master/ClassyTaxi) - Purchase subscriptions in your Android app and manage subscriptions on your server.
+* [Classy Taxi Kotlin App](https://github.com/android/play-billing-samples/tree/master/ClassyTaxiAppKotlin) - Purchase subscriptions in your Android app and manage subscriptions on your server.
+* [Classy Taxi Server](https://github.com/android/play-billing-samples/tree/master/ClassyTaxiServer) - Manage subscriptions on your server.
 
 
 ## Google Play Billing
@@ -18,6 +19,11 @@ For more information about Google Play Billing, see the documentation.
 
 # CHANGELOG
 
+* **2019-12-30**
+  * Restructure `ClassyTaxi` to separate Android, web, and server implementations.
+    * The `ClassyTaxi` Android app now lives [here](https://github.com/android/play-billing-samples/tree/master/ClassyTaxiAppKotlin).
+    * The `ClassyTaxi` read-only web app now lives [here](https://github.com/android/play-billing-samples/tree/master/ClassyTaxiAppWeb).
+    * The `ClassyTaxi` server implementation now lives [here](https://github.com/android/play-billing-samples/tree/master/ClassyTaxiServer).
 * **2019-10-10**
   * Remove apps that do not support Google Play Billing Library 2.0 or newer.
     The AIDL and older versions of the Google Play Billing Library are deprecated.
