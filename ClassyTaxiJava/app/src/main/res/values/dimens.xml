@@ -16,12 +16,14 @@
   -->
 
 <resources>
-    <color name="primaryColor">#4285f4</color>
-    <color name="primaryLightColor">#80b4ff</color>
-    <color name="primaryDarkColor">#0059c1</color>
-    <color name="secondaryColor">#ff9800</color>
-    <color name="secondaryLightColor">#ffc947</color>
-    <color name="secondaryDarkColor">#c66900</color>
-    <color name="primaryTextColor">#000000</color>
-    <color name="secondaryTextColor">#000000</color>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
+    <dimen name="small_card_corner_radius">0dp</dimen>
+
+    <!-- Dimensions for Android TV spinner -->
+    <dimen name="spinner_width">50dp</dimen>
+    <dimen name="spinner_height">50dp</dimen>
+
 </resources>
