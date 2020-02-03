@@ -16,18 +16,33 @@
 
 package com.example.android.classytaxijava.ui;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.example.android.classytaxijava.R;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private SectionsPagerAdapter sectionsPagerAdapter;
     private ViewPager container;
     private TabLayout tabs;
+
+    private FirebaseUserViewModel authenticationViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(container));
 
         // TODO Set up view models.
+        authenticationViewModel = ViewModelProviders.of(this).get(FirebaseUserViewModel.class);
 
         // TODO Set up Billing lifecycle observer.
 
@@ -69,7 +87,20 @@ public class MainActivity extends AppCompatActivity {
 
         // TODO Open the Play Store when event is triggered.
 
-        // TODO Update authentication UI.
+        // Update authentication UI.
+        final Observer<FirebaseUser> fireaseUserObserver = new Observer<FirebaseUser>() {
+            @Override
+            public void onChanged(@Nullable final FirebaseUser firebaseUser) {
+                invalidateOptionsMenu();
+                if (firebaseUser == null) {
+                    triggerSignIn();
+                } else {
+                    Log.d(TAG, "Current user: "
+                            + firebaseUser.getEmail() + " " + firebaseUser.getDisplayName());
+                }
+            }
+        };
+        authenticationViewModel.firebaseUser.observe(this, fireaseUserObserver);
 
         // TODO Update subscription information when user changes.
     }
@@ -78,6 +109,95 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
+    }
+
+    /**
+     * Update menu based on sign-in state. Called in response to {@link #invalidateOptionsMenu}.
+     */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean isSignedIn = authenticationViewModel.isSignedIn();
+        menu.findItem(R.id.sign_in).setVisible(!isSignedIn);
+        menu.findItem(R.id.sign_out).setVisible(isSignedIn);
+        return true;
+    }
+
+    /**
+     * Called when menu item is selected.
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sign_out:
+                triggerSignOut();
+                return true;
+            case R.id.sign_in:
+                triggerSignIn();
+                return true;
+            case R.id.refresh:
+                refreshData();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void refreshData() {
+        // TODO Query purchases through billingClientLifecycle.
+        // TODO Update subscriptionViewModel.
+    }
+
+    /**
+     * Sign in with FirebaseUI Auth.
+     */
+    private void triggerSignIn() {
+        Log.d(TAG, "Attempting SIGN-IN!");
+        List<AuthUI.IdpConfig> providers = new ArrayList<>();
+        // Configure the different methods users can sign in
+        providers.add(new AuthUI.IdpConfig.EmailBuilder().build());
+        providers.add(new AuthUI.IdpConfig.GoogleBuilder().build());
+
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .build(),
+                RC_SIGN_IN);
+    }
+
+    /**
+     * Sign out with FirebaseUI Auth.
+     */
+    private void triggerSignOut() {
+        // TODO Update subscriptionviewmodel.
+        AuthUI.getInstance().signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d(TAG, "User SIGNED OUT!");
+                        authenticationViewModel.updateFirebaseUser();
+                    }
+                });
+    }
+
+    /**
+     * Receive Activity result, including sign-in result.
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            // If sign-in is successful, update ViewModel.
+            if (resultCode == RESULT_OK) {
+                Log.d(TAG, "Sign-in SUCCESS!");
+                authenticationViewModel.updateFirebaseUser();
+            } else {
+                Log.d(TAG, "Sign-in FAILED!");
+            }
+        } else {
+            Log.e(TAG, "Unrecognized request code: " + requestCode);
+        }
     }
 
     /**

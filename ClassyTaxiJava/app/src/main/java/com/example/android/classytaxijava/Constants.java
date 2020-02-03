@@ -14,31 +14,16 @@
  * limitations under the License.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.example.android.classytaxijava;
 
-buildscript {
-    repositories {
-        google()
-        jcenter()
+public class Constants {
+    // Use the fake local server data or real remote server.
+    public static boolean USE_FAKE_SERVER = false;
 
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
-        classpath 'com.google.gms:google-services:4.3.3'  // Google Services plugin
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-
-    }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
+    public static final String BASIC_SKU = "basic_subscription";
+    public static final String PREMIUM_SKU = "premium_subscription";
+    public static final String PLAY_STORE_SUBSCRIPTION_URL
+            = "https://play.google.com/store/account/subscriptions";
+    public static final String PLAY_STORE_SUBSCRIPTION_DEEPLINK_URL
+            = "https://play.google.com/store/account/subscriptions?sku=%s&package=%s";
 }
