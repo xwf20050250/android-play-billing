@@ -17,8 +17,20 @@
 package com.example.android.classytaxijava.ui;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.example.android.classytaxijava.R;
+import com.example.android.classytaxijava.billing.BillingClientLifecycle;
+import com.example.android.classytaxijava.databinding.FragmentHomeBinding;
+import com.example.android.classytaxijava.databinding.FragmentPremiumBinding;
+import com.example.android.classytaxijava.databinding.FragmentSettingsBinding;
 
 /**
  * {@link Fragment} for Home, Premium, and Settings tabs.
@@ -32,6 +44,73 @@ public class TabFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancedState) {
+        BillingViewModel billingViewModel = ViewModelProviders.of(requireActivity()).get(BillingViewModel.class);
+        SubscriptionStatusViewModel subscriptionViewModel =
+                ViewModelProviders.of(requireActivity()).get(SubscriptionStatusViewModel.class);
+
+        int section = getArguments().getInt(ARG_SECTION_NUMBER);
+
+        switch (section) {
+            case MainActivity.HOME_PAGER_INDEX:
+                return createHomeView(inflater, container, billingViewModel, subscriptionViewModel);
+            case MainActivity.PREMIUM_PAGER_INDEX:
+                return createPremiumView(inflater, container, billingViewModel, subscriptionViewModel);
+            case MainActivity.SETTINGS_PAGER_INDEX:
+                return createSettingsView(inflater, container, billingViewModel, subscriptionViewModel);
+            default:
+                Log.e(TAG, "Unrecognized fragment index");
+                return createHomeView(inflater, container, billingViewModel, subscriptionViewModel);
+        }
+    }
+
+    /**
+     * Inflate the UI view for the Home tab and bind to the ViewModel.
+     */
+    private View createHomeView(LayoutInflater inflater, ViewGroup container,
+                                BillingViewModel billingViewModel,
+                                SubscriptionStatusViewModel subscriptionViewModel) {
+        // Data binding with a ViewModel.
+        FragmentHomeBinding fragmentBinding =
+                DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
+        fragmentBinding.setLifecycleOwner(this);
+        fragmentBinding.setBillingViewModel(billingViewModel);
+        fragmentBinding.setSubscriptionViewModel(subscriptionViewModel);
+        return fragmentBinding.getRoot();
+    }
+
+    /**
+     * Inflate the UI view for the Premium tab and bind to the ViewModel.
+     */
+    private View createPremiumView(LayoutInflater inflater, ViewGroup container,
+                                   BillingViewModel billingViewModel,
+                                   SubscriptionStatusViewModel subscriptionViewModel) {
+        // Data binding with a ViewModel.
+        FragmentPremiumBinding fragmentBinding = DataBindingUtil.inflate(
+                inflater, R.layout.fragment_premium, container, false);
+        fragmentBinding.setLifecycleOwner(this);
+        fragmentBinding.setBillingViewModel(billingViewModel);
+        fragmentBinding.setSubscriptionViewModel(subscriptionViewModel);
+        return fragmentBinding.getRoot();
+    }
+
+    /**
+     * Inflate the UI view for the Settings tab and bind to the ViewModel.
+     */
+    private View createSettingsView(LayoutInflater inflater, ViewGroup container,
+                                    BillingViewModel billingViewModel,
+                                    SubscriptionStatusViewModel subscriptionViewModel) {
+        // Data binding with a ViewModel.
+        FragmentSettingsBinding fragmentBinding =
+                DataBindingUtil.inflate(
+                        inflater, R.layout.fragment_settings, container, false);
+        fragmentBinding.setLifecycleOwner(this);
+        fragmentBinding.setBillingViewModel(billingViewModel);
+        fragmentBinding.setSubscriptionViewModel(subscriptionViewModel);
+        return fragmentBinding.getRoot();
+    }
 
     public static TabFragment newInstance(int sectionNumber) {
         Bundle args = new Bundle();

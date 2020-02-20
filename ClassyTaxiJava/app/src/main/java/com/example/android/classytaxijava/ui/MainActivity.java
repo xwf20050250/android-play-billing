@@ -35,6 +35,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.example.android.classytaxijava.R;
+import com.example.android.classytaxijava.SubApp;
+import com.example.android.classytaxijava.billing.BillingClientLifecycle;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,18 +48,23 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final int HOME_PAGER_INDEX = 0;
+    public static final int PREMIUM_PAGER_INDEX = 1;
+    public static final int SETTINGS_PAGER_INDEX = 2;
+
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 0;
-    private static final int HOME_PAGER_INDEX = 0;
-    private static final int PREMIUM_PAGER_INDEX = 1;
-    private static final int SETTINGS_PAGER_INDEX = 2;
     private static final int COUNT = 3;
 
     private SectionsPagerAdapter sectionsPagerAdapter;
     private ViewPager container;
     private TabLayout tabs;
 
+    private BillingClientLifecycle billingClientLifecycle;
+
     private FirebaseUserViewModel authenticationViewModel;
+    private BillingViewModel billingViewModel;
+    private SubscriptionStatusViewModel subscriptionViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,10 +83,12 @@ public class MainActivity extends AppCompatActivity {
         container.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(container));
 
-        // TODO Set up view models.
         authenticationViewModel = ViewModelProviders.of(this).get(FirebaseUserViewModel.class);
+        billingViewModel = ViewModelProviders.of(this).get(BillingViewModel.class);
+        subscriptionViewModel = ViewModelProviders.of(this).get(SubscriptionStatusViewModel.class);
 
-        // TODO Set up Billing lifecycle observer.
+        billingClientLifecycle = ((SubApp) getApplication()).getBillingClientLifecycle();
+        getLifecycle().addObserver(billingClientLifecycle);
 
         // TODO Register purchases when they change.
 

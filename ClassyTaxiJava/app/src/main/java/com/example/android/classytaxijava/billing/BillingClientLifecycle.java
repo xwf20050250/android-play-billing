@@ -67,12 +67,24 @@ public class BillingClientLifecycle implements LifecycleObserver, PurchasesUpdat
      */
     public MutableLiveData<Map<String, SkuDetails>> skusWithSkuDetails = new MutableLiveData<>();
 
+    private static volatile BillingClientLifecycle INSTANCE;
+
     private Application app;
     private BillingClient billingClient;
 
-
     private BillingClientLifecycle(Application app) {
         this.app = app;
+    }
+
+    public static BillingClientLifecycle getInstance(Application app) {
+        if (INSTANCE == null) {
+            synchronized (BillingClientLifecycle.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new BillingClientLifecycle(app);
+                }
+            }
+        }
+        return INSTANCE;
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
