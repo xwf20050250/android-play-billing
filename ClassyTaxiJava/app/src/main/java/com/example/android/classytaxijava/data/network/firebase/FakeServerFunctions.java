@@ -16,6 +16,7 @@
 
 package com.example.android.classytaxijava.data.network.firebase;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -25,6 +26,8 @@ import com.example.android.classytaxijava.data.ContentResource;
 import com.example.android.classytaxijava.data.SubscriptionStatus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,7 +42,7 @@ public class FakeServerFunctions implements ServerFunctions {
 
     /**
      * The latest subscription data.
-     *
+     * <p>
      * Use this class by observing the subscriptions {@link LiveData}.
      * Fake data will be communicated through this LiveData.
      */
@@ -90,7 +93,7 @@ public class FakeServerFunctions implements ServerFunctions {
     }
 
     /**
-     * Fetch fake basic content and post results to [basicContent].
+     * Fetch fake basic content and post results to {@link #basicContent}.
      * This will fail if the user does not have a basic subscription.
      */
     @Override
@@ -110,7 +113,7 @@ public class FakeServerFunctions implements ServerFunctions {
     }
 
     /**
-     * Fetch fake premium content and post results to [premiumContent].
+     * Fetch fake premium content and post results to {@link #premiumContent}.
      * This will fail if the user does not have a premium subscription.
      */
     @Override
@@ -132,28 +135,60 @@ public class FakeServerFunctions implements ServerFunctions {
      */
     @Override
     public void updateSubscriptionStatus() {
-        // TODO
+        List<SubscriptionStatus> nextSub = new ArrayList<>();
+        SubscriptionStatus subscriptionStatus = nextFakeSubscription();
+        if (subscriptionStatus != null) {
+            nextSub.add(subscriptionStatus);
+        }
+        subscriptions.postValue(nextSub);
     }
 
+    /**
+     * Register a subscription with the server and posts successful results to
+     * {@link #subscriptions}.
+     */
     @Override
     public void registerSubscription(String sku, String purchaseToken) {
-        // TODO
+        // When successful, return subscription results.
+        // When response code is HTTP 409 CONFLICT create an already owned subscription.
+        switch (sku) {
+            case Constants.BASIC_SKU:
+                subscriptions.postValue(Collections.singletonList(createFakeBasicSubscription()));
+                break;
+            case Constants.PREMIUM_SKU:
+                subscriptions.postValue(Collections.singletonList(createFakePremiumSubscription()));
+                break;
+            default:
+                subscriptions.postValue(Collections.singletonList(
+                        createAlreadyOwnedSubscription(sku, purchaseToken)));
+
+        }
     }
 
+    /**
+     * Transfer subscription to this account posts successful results to {@link #subscriptions}.
+     */
     @Override
     public void transferSubscription(String sku, String purchaseToken) {
-        // TODO
+        SubscriptionStatus subscription = createFakeBasicSubscription();
+        subscription.sku = sku;
+        subscription.purchaseToken = purchaseToken;
+        subscription.subAlreadyOwned = false;
+        subscription.isEntitlementActive = true;
+        subscriptions.postValue(Collections.singletonList(subscription));
     }
 
+    /**
+     * Register Instance ID when the user signs in or the token is refreshed.
+     */
     @Override
-    public void registerInstanceId(String instanceId) {
-        // TODO
-    }
+    public void registerInstanceId(String instanceId) { }
 
+    /**
+     * Unregister when the user signs out.
+     */
     @Override
-    public void unregisterInstanceId(String instanceId) {
-        // TODO
-    }
+    public void unregisterInstanceId(String instanceId) { }
 
     /**
      * Create a local record of a subscription that is already owned by someone else.
@@ -171,6 +206,7 @@ public class FakeServerFunctions implements ServerFunctions {
         return subscriptionStatus;
     }
 
+    @Nullable
     private SubscriptionStatus nextFakeSubscription() {
         SubscriptionStatus subscription;
         switch (fakeDataIndex) {

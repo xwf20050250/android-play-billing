@@ -56,8 +56,14 @@ dependencies {
     implementation 'androidx.viewpager:viewpager:1.0.0'
 
     // Firebase libraries.
-    implementation 'com.google.firebase:firebase-auth:19.2.0'
-    implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
+    // These libraries versions are known to be compatible with each other.
+    // If you encounter a build error "Cannot Access Hide", it means the Firebase libraries'
+    // versions you are using are not compatible.
+    implementation 'com.firebaseui:firebase-ui-auth:3.3.0'
+    implementation 'com.google.firebase:firebase-auth:12.0.1'
+    implementation 'com.google.firebase:firebase-core:12.0.1'
+    implementation 'com.google.firebase:firebase-functions:12.0.1'
+    implementation 'com.google.firebase:firebase-messaging:12.0.1'
 
     // ViewModel and LiveData extensions.
     implementation 'android.arch.lifecycle:extensions:1.1.1'
