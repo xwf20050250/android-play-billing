@@ -25,6 +25,7 @@ import com.example.android.classytaxijava.data.disk.AppDatabase;
 import com.example.android.classytaxijava.data.network.WebDataSource;
 import com.example.android.classytaxijava.data.network.firebase.FakeServerFunctions;
 import com.example.android.classytaxijava.data.network.firebase.ServerFunctions;
+import com.example.android.classytaxijava.data.network.firebase.ServerFunctionsImpl;
 
 /**
  * Android Application class. Used for accessing singletons.
@@ -40,11 +41,13 @@ public class SubApp extends Application {
         return LocalDataSource.getInstance(executors, getDatabase());
     }
 
-    // TODO also use real server
     public ServerFunctions getServerFunctions() {
-        return FakeServerFunctions.getInstance();
+        if (Constants.USE_FAKE_SERVER) {
+            return FakeServerFunctions.getInstance();
+        } else {
+            return ServerFunctionsImpl.getInstance();
+        }
     }
-
 
     public WebDataSource getWebDataSource() {
         return WebDataSource.getInstance(executors, getServerFunctions());

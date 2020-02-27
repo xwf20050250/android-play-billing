@@ -59,6 +59,8 @@ public class ServerFunctionsImpl implements ServerFunctions {
     private MutableLiveData<ContentResource> basicContent = new MutableLiveData<>();
     private MutableLiveData<ContentResource> premiumContent = new MutableLiveData<>();
 
+    private static volatile ServerFunctions INSTANCE = null;
+
     /**
      * Singleton instance of the Firebase Functions API.
      */
@@ -75,6 +77,19 @@ public class ServerFunctionsImpl implements ServerFunctions {
     @Override
     public MutableLiveData<Boolean> getLoading() {
         return loading;
+    }
+
+    private ServerFunctionsImpl() {}
+
+    public static ServerFunctions getInstance() {
+        if (INSTANCE == null) {
+            synchronized (ServerFunctionsImpl.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new ServerFunctionsImpl();
+                }
+            }
+        }
+        return INSTANCE;
     }
 
     /**

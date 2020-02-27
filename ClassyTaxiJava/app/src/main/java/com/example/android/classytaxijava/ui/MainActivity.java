@@ -28,12 +28,16 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.Purchase;
+import com.example.android.classytaxijava.Constants;
 import com.example.android.classytaxijava.R;
 import com.example.android.classytaxijava.SubApp;
 import com.example.android.classytaxijava.billing.BillingClientLifecycle;
@@ -90,11 +94,46 @@ public class MainActivity extends AppCompatActivity {
         billingClientLifecycle = ((SubApp) getApplication()).getBillingClientLifecycle();
         getLifecycle().addObserver(billingClientLifecycle);
 
-        // TODO Register purchases when they change.
+        // Register purchases when they change.
+        billingClientLifecycle.purchaseUpdateEvent.observe(this, new Observer<List<Purchase>>() {
+            @Override
+            public void onChanged(List<Purchase> purchases) {
+                if (purchases != null) {
+                    registerPurchases(purchases);
+                }
+            }
+        });
 
-        // TODO Launch billing flow when user clicks button to buy something.
+        // Launch billing flow when user clicks button to buy something.
+        billingViewModel.buyEvent.observe(this, new Observer<BillingFlowParams>() {
+            @Override
+            public void onChanged(BillingFlowParams billingFlowParams) {
+                if (billingFlowParams != null) {
+                    billingClientLifecycle
+                            .launchBillingFlow(MainActivity.this, billingFlowParams);
+                }
+            }
+        });
 
-        // TODO Open the Play Store when event is triggered.
+        // Open the Play Store when event is triggered.
+        billingViewModel.openPlayStoreSubscriptionsEvent.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String sku) {
+                Log.i(TAG, "Viewing subscriptions on the Google Play Store");
+                String url;
+                if (sku == null) {
+                    // If the SKU is not specified, just open the Google Play subscriptions URL.
+                    url = Constants.PLAY_STORE_SUBSCRIPTION_URL;
+                } else {
+                    // If the SKU is specified, open the deeplink for this SKU on Google Play.
+                    url = String.format(Constants.PLAY_STORE_SUBSCRIPTION_DEEPLINK_URL,
+                            sku, getApplicationContext().getPackageName());
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+            }
+        });
 
         // Update authentication UI.
         final Observer<FirebaseUser> fireaseUserObserver = new Observer<FirebaseUser>() {
@@ -111,7 +150,29 @@ public class MainActivity extends AppCompatActivity {
         };
         authenticationViewModel.firebaseUser.observe(this, fireaseUserObserver);
 
-        // TODO Update subscription information when user changes.
+        // Update subscription information when user changes.
+        authenticationViewModel.userChangeEvent.observe(this, new Observer<Void>() {
+            @Override
+            public void onChanged(Void aVoid) {
+                subscriptionViewModel.userChanged();
+                List<Purchase> purchases = billingClientLifecycle.purchaseUpdateEvent.getValue();
+                if (purchases != null) {
+                    registerPurchases(purchases);
+                }
+            }
+        });
+    }
+
+    /**
+     * Register SKUs and purchase tokens with the server.
+     */
+    private void registerPurchases(List<Purchase> purchaseList) {
+        for (Purchase purchase : purchaseList) {
+            String sku = purchase.getSku();
+            String purchaseToken = purchase.getPurchaseToken();
+            Log.d(TAG, "Register purchase with sku: " + sku + ", token: " + purchaseToken);
+            subscriptionViewModel.registerSubscription(sku, purchaseToken);
+        }
     }
 
     @Override
@@ -152,8 +213,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshData() {
-        // TODO Query purchases through billingClientLifecycle.
-        // TODO Update subscriptionViewModel.
+        billingClientLifecycle.queryPurchases();
+        subscriptionViewModel.manualRefresh();
     }
 
     /**
@@ -178,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
      * Sign out with FirebaseUI Auth.
      */
     private void triggerSignOut() {
-        // TODO Update subscriptionviewmodel.
+        subscriptionViewModel.unregisterInstanceId();
         AuthUI.getInstance().signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

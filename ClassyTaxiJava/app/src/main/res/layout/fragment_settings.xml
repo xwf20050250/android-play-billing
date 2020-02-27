@@ -96,8 +96,6 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <!-- TODO implement transferring subscription -->
-
                         <Button
                             android:id="@+id/subscription_option_basic_button"
                             android:layout_width="match_parent"
@@ -122,6 +120,31 @@
                             android:text="@string/subscription_option_premium_message"
                             android:theme="@style/ButtonTheme" />
 
+                        <LinearLayout
+                            android:id="@+id/settings_transfer_message"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/activity_horizontal_margin"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                            android:layout_marginBottom="@dimen/activity_vertical_margin"
+                            android:orientation="vertical">
+
+                            <Button
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:onClick="@{() -> subscriptionViewModel.transferSubscriptions()}"
+                                android:text="@string/transfer_button_text"
+                                android:theme="@style/ButtonTheme" />
+
+                            <TextView
+                                android:id="@+id/settings_transfer_message_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/transfer_message" />
+
+                        </LinearLayout>
+
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
@@ -141,6 +164,7 @@
     </ScrollView>
 
     <data>
+
         <variable
             name="billingViewModel"
             type="com.example.android.classytaxijava.ui.BillingViewModel" />

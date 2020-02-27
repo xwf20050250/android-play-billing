@@ -104,7 +104,17 @@ public class BillingViewModel extends AndroidViewModel {
      * we look at the server data to determine the deeplink.
      */
     public void openAccountHoldSubscription() {
-        // TODO
+        boolean isPremiumOnServer = BillingUtilities
+                .serverHasSubscription(subscriptions.getValue(), Constants.PREMIUM_SKU);
+        boolean isBasicOnServer = BillingUtilities
+                .serverHasSubscription(subscriptions.getValue(), Constants.BASIC_SKU);
+        if (isPremiumOnServer) {
+            openPremiumPlayStoreSubscriptions();
+        }
+
+        if (isBasicOnServer) {
+            openBasicPlayStoreSubscriptions();
+        }
     }
 
     /**
@@ -277,14 +287,16 @@ public class BillingViewModel extends AndroidViewModel {
                     "subscription without user permission.");
             return false;
         } else {
-            SubscriptionStatus subscription;
-            subscription = BillingUtilities.getSubscriptionForSku(subscriptions, oldSku);
-            if (subscription == null) {
+            SubscriptionStatus subscription = BillingUtilities
+                    .getSubscriptionForSku(subscriptions, oldSku);
+            if (subscription != null && subscription.subAlreadyOwned) {
+                Log.i("Billing", "The old subscription is used by a " +
+                        "different app account. However, it was paid for by the same " +
+                        "Google account that is on this device.");
                 return false;
+            } else {
+                return true;
             }
-            // TODO handle subscription.subAlreadyOwned for when old subscription is used by
-            //  a different app account
-            return true;
         }
     }
 }

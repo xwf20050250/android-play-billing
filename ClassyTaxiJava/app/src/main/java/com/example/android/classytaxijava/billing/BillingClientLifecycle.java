@@ -251,7 +251,11 @@ public class BillingClientLifecycle implements LifecycleObserver, PurchasesUpdat
      * The LiveData will allow Google Play settings UI to update based on the latest purchase data.
      */
     private void processPurchases(List<Purchase> purchasesList) {
-        Log.d(TAG, "processPurchases: " + purchasesList.size() + " purchase(s)");
+        if (purchasesList != null) {
+            Log.d(TAG, "processPurchases: " + purchasesList.size() + " purchase(s)");
+        } else {
+            Log.d(TAG, "processPurchases: with no purchases");
+        }
         if (isUnchangedPurchaseList(purchasesList)) {
             Log.d(TAG, "processPurchases: Purchase list has not changed");
             return;

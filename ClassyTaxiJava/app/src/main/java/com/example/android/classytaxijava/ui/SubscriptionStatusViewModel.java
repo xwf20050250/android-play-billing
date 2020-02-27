@@ -17,6 +17,7 @@
 package com.example.android.classytaxijava.ui;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -25,6 +26,7 @@ import com.example.android.classytaxijava.SubApp;
 import com.example.android.classytaxijava.data.ContentResource;
 import com.example.android.classytaxijava.data.DataRepository;
 import com.example.android.classytaxijava.data.SubscriptionStatus;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.List;
 
@@ -67,32 +69,53 @@ public class SubscriptionStatusViewModel extends AndroidViewModel {
     }
 
     public void unregisterInstanceId() {
-        // TODO
+        // Unregister current Instance ID before the user signs out.
+        // This is an authenticated call, so you cannot do this after the sign-out has completed.
+        if (instanceIdToken != null) {
+            repository.unregisterInstanceId(instanceIdToken);
+        }
     }
 
     public void userChanged() {
-        // TODO
+        repository.deleteLocalUserData();
+        String token = FirebaseInstanceId.getInstance().getToken();
+        if (token != null) {
+            registerInstanceId(token);
+        }
+        repository.fetchSubscriptions();
     }
 
     public void manualRefresh() {
-        // TODO
+        repository.fetchSubscriptions();
     }
 
     private void registerInstanceId(String token) {
-        // TODO
+        repository.registerInstanceId(token);
+        // Keep track of the Instance ID so that it can be unregistered.
+        instanceIdToken = token;
     }
 
     /**
      * Register a new subscription.
      */
     public void registerSubscription(String sku, String purchaseToken) {
-        // TODO
+        repository.registerSubscription(sku, purchaseToken);
     }
 
     /**
      * Transfer the subscription to this account.
      */
     public void transferSubscriptions() {
-        // TODO
+        Log.d(TAG, "transferSubscriptions");
+        List<SubscriptionStatus> subs = subscriptions.getValue();
+        if (subs != null) {
+            for (SubscriptionStatus subscription : subs) {
+                String sku = subscription.sku;
+                String purchaseToken = subscription.purchaseToken;
+                if (sku != null && purchaseToken != null) {
+                    repository.transferSubscription(sku, purchaseToken);
+                }
+            }
+        }
     }
 }

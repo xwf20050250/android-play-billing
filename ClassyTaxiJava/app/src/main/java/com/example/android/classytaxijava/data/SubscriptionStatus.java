@@ -139,4 +139,22 @@ public class SubscriptionStatus {
         subscriptionStatus.subAlreadyOwned = true;
         return subscriptionStatus;
     }
+
+    @Override
+    public String toString() {
+        return "SubscriptionStatus{" +
+                "primaryKey=" + primaryKey +
+                ", subscriptionStatusJson='" + subscriptionStatusJson + '\'' +
+                ", subAlreadyOwned=" + subAlreadyOwned +
+                ", isLocalPurchase=" + isLocalPurchase +
+                ", sku='" + sku + '\'' +
+                ", purchaseToken='" + purchaseToken + '\'' +
+                ", isEntitlementActive=" + isEntitlementActive +
+                ", willRenew=" + willRenew +
+                ", activeUntilMillisec=" + activeUntilMillisec +
+                ", isFreeTrial=" + isFreeTrial +
+                ", isGracePeriod=" + isGracePeriod +
+                ", isAccountHold=" + isAccountHold +
+                '}';
+    }
 }

@@ -32,7 +32,36 @@
                 android:orientation="vertical"
                 app:updatePremiumViews="@{subscriptionViewModel.subscriptions}">
 
-                <!-- TODO implement grace period and restore -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/premium_small_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/secondaryColor"
+                    android:onClick="@{() -> billingViewModel.openPlayStoreSubscriptions()}"
+                    app:cardCornerRadius="@dimen/small_card_corner_radius">
+
+                    <TextView
+                        android:id="@+id/premium_restore_message"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/activity_horizontal_margin"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
+                        android:textColor="@color/secondaryTextColor" />
+
+                    <TextView
+                        android:id="@+id/premium_grace_period_message"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/activity_horizontal_margin"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
+                        android:text="@string/grace_period_message"
+                        android:textColor="@color/secondaryTextColor" />
+
+                </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/premium_main_card"
@@ -48,9 +77,64 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <!-- TODO implement account transfer -->
+                        <LinearLayout
+                            android:id="@+id/premium_transfer_message"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/activity_horizontal_margin"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                            android:layout_marginBottom="@dimen/activity_vertical_margin"
+                            android:orientation="vertical">
 
-                        <!-- TODO implement account hold -->
+                            <Button
+                                android:id="@+id/premium_transfer_button"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:onClick="@{() -> subscriptionViewModel.transferSubscriptions()}"
+                                android:text="@string/transfer_button_text"
+                                android:theme="@style/ButtonTheme" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/transfer_message" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/premium_account_hold_message"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/activity_horizontal_margin"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                            android:layout_marginBottom="@dimen/activity_vertical_margin"
+                            android:orientation="vertical">
+
+                            <Button
+                                android:id="@+id/premium_account_hold_button"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:onClick="@{() -> billingViewModel.openAccountHoldSubscription()}"
+                                android:text="@string/fix_button_text"
+                                android:theme="@style/ButtonTheme" />
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/account_hold_rain_taxi_1200x560" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/activity_vertical_margin"
+                                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                                android:text="@string/account_hold_message" />
+
+                        </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/premium_premium_content"
@@ -100,7 +184,30 @@
 
                         </LinearLayout>
 
-                        <!-- TODO implement upgrade -->
+                        <LinearLayout
+                            android:id="@+id/premium_upgrade_message"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/activity_horizontal_margin"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                            android:layout_marginBottom="@dimen/activity_vertical_margin"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <Button
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:onClick="@{() -> billingViewModel.buyUpgrade()}"
+                                android:text="@string/upgrade_button_text"
+                                android:theme="@style/ButtonTheme" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/premium_upgrade_message" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
@@ -121,6 +228,7 @@
     </ScrollView>
 
     <data>
+
         <variable
             name="billingViewModel"
             type="com.example.android.classytaxijava.ui.BillingViewModel" />
