@@ -5,7 +5,7 @@ This is the Node.js server that manages subscriptions for the ClassyTaxi
 [Android](https://github.com/android/play-billing-samples/tree/master/ClassyTaxiAppKotlin) and
 [web](https://github.com/android/play-billing-samples/tree/master/ClassyTaxiAppWeb) app.
 
-![Classy Taxi animation GIF showing subscription features of Google Play Billing](classy_taxi_animation.gif)
+![Classy Taxi animation GIF showing subscription features of Google Play Billing](../ClassyTaxiAppKotlin/classy_taxi_animation.gif)
 
 # Deploy Backend Server
 
