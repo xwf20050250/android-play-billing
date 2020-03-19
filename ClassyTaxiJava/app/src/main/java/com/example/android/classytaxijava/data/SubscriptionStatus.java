@@ -101,6 +101,8 @@ public class SubscriptionStatus {
             subscriptionStatus.isFreeTrial = (Boolean) subStatus.get(IS_FREE_TRIAL_KEY);
             subscriptionStatus.isGracePeriod = (Boolean) subStatus.get(IS_GRACE_PERIOD_KEY);
             subscriptionStatus.isAccountHold = (Boolean) subStatus.get(IS_ACCOUNT_HOLD_KEY);
+
+            subscriptions.add(subscriptionStatus);
         }
 
         return subscriptions;
