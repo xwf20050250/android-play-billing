@@ -234,7 +234,7 @@ public class DataRepository {
             updateLocalPurchaseTokens(newSubscriptions, purchases);
         }
         if (newSubscriptions != null) {
-            addAll(newSubscriptions);
+            subscriptionStatuses.addAll(newSubscriptions);
         }
         // Find old subscriptions that are in purchases but not in new subscriptions.
         if (purchases != null && oldSubscriptions != null) {
