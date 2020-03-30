@@ -549,7 +549,7 @@ class BillingRepository private constructor(private val application: Application
      *
      * Google Play Billing refers to receipts as [Purchases][Purchase]. So when a user buys
      * something, Play Billing returns a [Purchase] object that the app then uses to release the
-     * [Entitlement] to the user. Receipts are pivotal within the [BillingRepositor]; but they are
+     * [Entitlement] to the user. Receipts are pivotal within the [BillingRepository]; but they are
      * not part of the repo’s public API, because clients don’t need to know about them. When
      * the release of entitlements occurs depends on the type of purchase. For consumable products,
      * the release may be deferred until after consumption by Google Play; for non-consumable
@@ -698,7 +698,7 @@ class BillingRepository private constructor(private val application: Application
                         localCacheBillingClient.skuDetailsDao()
                                 .insertOrUpdate(purchase.sku, goldStatus.mayPurchase())
                         /* there is more than one way to buy gold status. After disabling the
-                        one the user just purchased, re-enble the others */
+                        one the user just purchased, re-enable the others */
                         GameSku.GOLD_STATUS_SKUS.forEach { otherSku ->
                             if (otherSku != purchase.sku) {
                                 localCacheBillingClient.skuDetailsDao()
