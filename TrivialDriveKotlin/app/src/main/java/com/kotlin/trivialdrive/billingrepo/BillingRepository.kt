@@ -295,7 +295,7 @@ import java.util.HashSet
  *   [Activity] lifecycle event. Hence, they are the starting points in the process.
  *
  * 2. [onPurchasesUpdated] is the callback that the Play [BillingClient] calls in response to its
- *    [launcBillingFlow][BillingClient.launchBillingFlow] being called. If the response code is
+ *    [launchBillingFlow][BillingClient.launchBillingFlow] being called. If the response code is
  *    [BillingClient.BillingResponseCode.OK], then developers may go straight to [processPurchases]. If, however, the
  *    response code is [BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED], then developers should call
  *    [queryPurchasesAsync] to verify if other such already-owned items exist that should be
