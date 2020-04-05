@@ -22,6 +22,7 @@ import androidx.room.PrimaryKey;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.Map;
 public class SubscriptionStatus {
     public class SubscriptionStatusList {
         @Nullable
+        @SerializedName("subscriptions")
         List<SubscriptionStatus> subscriptionStatuses;
 
         SubscriptionStatusList(@Nullable List<SubscriptionStatus> subscriptionStatuses) {
