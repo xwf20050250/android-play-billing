@@ -4,10 +4,10 @@
       "npm --prefix \"$RESOURCE_DIR\" run lint",
       "npm --prefix \"$RESOURCE_DIR\" run build"
     ],
-    "source": "server"
+    "source": "."
   },
   "hosting": {
-    "public": "web",
+    "public": "webapp",
     "ignore": [
       "firebase.json",
       "**/.*",
