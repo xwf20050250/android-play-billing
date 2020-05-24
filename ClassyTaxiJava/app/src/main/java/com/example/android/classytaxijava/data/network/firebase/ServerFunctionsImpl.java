@@ -392,7 +392,52 @@ public class ServerFunctionsImpl implements ServerFunctions {
      */
     @Override
     public void transferSubscription(String sku, String purchaseToken) {
+        incrementRequestCount();
+        Log.d(TAG, "Calling: " + TRANSFER_SUBSCRIPTION_CALLABLE);
+        Map<String, String> data = new HashMap<>();
+        data.put(SKU_KEY, sku);
+        data.put(PURCHASE_TOKEN_KEY, purchaseToken);
+        firebaseFunctions
+                .getHttpsCallable(TRANSFER_SUBSCRIPTION_CALLABLE)
+                .call(data)
+                .addOnCompleteListener(new OnCompleteListener<HttpsCallableResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<HttpsCallableResult> task) {
+                        decrementRequestCount();
+                        if (task.isSuccessful()) {
+                            Log.i(TAG, "Subscription transfer successful");
+                            Map<String, Object> result = null;
+                            try {
+                                result = (Map<String, Object>) task.getResult().getData();
+                            } catch (Exception e) {
+                                Log.e(TAG, "Invalid subscription transfer data");
+                                return;
+                            }
+                            List<SubscriptionStatus> subs = SubscriptionStatus.listFromMap(result);
+                            if (subs == null) {
+                                Log.e(TAG, "Invalid subscriptionregistration data");
+                                return;
+                            }
+                            subscriptions.postValue(subs);
+                        } else {
+                            ServerError error =
+                                    serverErrorFromFirebaseException(task.getException());
+                            switch (error) {
+                                case NOT_FOUND:
+                                    Log.e(TAG,
+                                            "Invalid SKU or purchase token during transfer");
+                                    break;
+                                case INTERNAL:
+                                    Log.e(TAG, "Subscription transfer server error");
+                                    break;
+                                default:
+                                    Log.e(TAG,
+                                            "Unknown error during subscription transfer");
+                            }
+                        }
 
+                    }
+                });
     }
 
     /**
