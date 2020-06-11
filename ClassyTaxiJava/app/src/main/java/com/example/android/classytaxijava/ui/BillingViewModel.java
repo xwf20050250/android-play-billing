@@ -24,6 +24,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.SkuDetails;
@@ -254,7 +255,9 @@ public class BillingViewModel extends AndroidViewModel {
                     BillingFlowParams.newBuilder().setSkuDetails(skuDetails);
             // Only set the old SKU parameter if the old SKU is already owned.
             if (oldSkuToBeReplaced != null && !oldSkuToBeReplaced.equals(sku)) {
-                billingBuilder.setOldSku(oldSkuToBeReplaced);
+                Purchase oldPurchase = BillingUtilities
+                        .getPurchaseForSku(purchases.getValue(), sku);
+                billingBuilder.setOldSku(oldSkuToBeReplaced, oldPurchase.getPurchaseToken());
             }
 
             BillingFlowParams billingParams = billingBuilder.build();

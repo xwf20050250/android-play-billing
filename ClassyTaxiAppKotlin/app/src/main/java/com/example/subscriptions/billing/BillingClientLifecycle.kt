@@ -144,13 +144,8 @@ class BillingClientLifecycle private constructor(
      * of the app to use the [SkuDetails] to show SKU information and make purchases.
      */
     override fun onSkuDetailsResponse(
-            billingResult: BillingResult?,
-            skuDetailsList: MutableList<SkuDetails>?
-    ) {
-        if (billingResult == null) {
-            Log.wtf(TAG, "onSkuDetailsResponse: null BillingResult")
-            return
-        }
+            billingResult: BillingResult,
+            skuDetailsList: MutableList<SkuDetails>?) {
         val responseCode = billingResult.responseCode
         val debugMessage = billingResult.debugMessage
         when (responseCode) {
@@ -215,13 +210,8 @@ class BillingClientLifecycle private constructor(
      * Called by the Billing Library when new purchases are detected.
      */
     override fun onPurchasesUpdated(
-            billingResult: BillingResult?,
-            purchases: MutableList<Purchase>?
-    ) {
-        if (billingResult == null) {
-            Log.wtf(TAG, "onPurchasesUpdated: null BillingResult")
-            return
-        }
+            billingResult: BillingResult,
+            purchases: MutableList<Purchase>?) {
         val responseCode = billingResult.responseCode
         val debugMessage = billingResult.debugMessage
         Log.d(TAG, "onPurchasesUpdated: $responseCode $debugMessage")
