@@ -24,6 +24,7 @@ import com.android.billingclient.api.Purchase
 import com.example.subscriptions.Constants
 import com.example.subscriptions.SubApp
 import com.example.subscriptions.billing.deviceHasGooglePlaySubscription
+import com.example.subscriptions.billing.purchaseForSku
 import com.example.subscriptions.billing.serverHasSubscription
 import com.example.subscriptions.billing.subscriptionForSku
 import com.example.subscriptions.data.SubscriptionStatus
@@ -235,7 +236,9 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
         val billingBuilder = BillingFlowParams.newBuilder().setSkuDetails(skuDetails)
         // Only set the old SKU parameter if the old SKU is already owned.
         if (oldSkuToBeReplaced != null && oldSkuToBeReplaced != sku) {
-            billingBuilder.setOldSku(oldSkuToBeReplaced)
+            purchaseForSku(purchases.value, sku)?.apply {
+                billingBuilder.setOldSku(oldSkuToBeReplaced, purchaseToken)
+            }
         }
         val billingParams = billingBuilder.build()
 
