@@ -16,7 +16,13 @@
 package com.kotlin.trivialdrive.billingrepo.localdb
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
 
 /**
  * No update methods necessary since for each table there is ever expecting one row, hence why

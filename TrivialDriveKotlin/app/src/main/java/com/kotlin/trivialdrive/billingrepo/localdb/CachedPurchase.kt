@@ -15,7 +15,11 @@
  */
 package com.kotlin.trivialdrive.billingrepo.localdb
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.Purchase
 import com.kotlin.trivialdrive.billingrepo.BillingRepository
@@ -26,11 +30,10 @@ import com.kotlin.trivialdrive.billingrepo.BillingRepository
  * - Convenience: when Play Billing calls onConsumeResponse, entitlements can be disbursed without
  *   first consulting the secure server, which might be temporarily down for, say, maintenance.
  *
- * - Security: Elaborating about security in a public document can be tricky. But since the claim
- *   has been made, so explanation must follow. Imagine a situation where four users of Trivial
+ * - Security: Imagine a situation where four users of Trivial
  *   Drive decide to share one premium car purchase amongst themselves. So one user would buy the
  *   car and then log into the Play Store on each phone and as soon as they open the Trivial Drive
- *   app on a phone, they would see a Premium car. That's fraudulent. But since this [Entity] is part
+ *   app on a phone, they would see a Premium car. That would be fraudulent, but since this [Entity] is part
  *   of the local cache, the [BillingRepository] would notice there is a purchase in this local
  *   cache that the secure server does not recognize as belonging to this user. The secure server
  *   would then conduct further investigations and discover the fraud.
@@ -39,14 +42,14 @@ import com.kotlin.trivialdrive.billingrepo.BillingRepository
  * will ever be saved here. It will keep subscriptions and non-consumables definitely, but
  * temporarily store consumables until Play confirms they have been consumed.
  *
- * While it would be more naturally to simply call this class "Purchase," that might confuse new
+ * While it would be more natural to simply call this class "Purchase," that might confuse new
  * developers to your team since [BillingClient] already calls its data [Purchase]. So it's better
  * to give it a different name. Also recall that [BillingRepository] must handle three different
  * data sources. So letting each source call its data by a slightly different name might make
  * reading the code easier.
  */
 
-//Fixme, this is the preferred implementation. It will be used when the bug in ignoreColumns is fixed
+//TODO: This is the preferred implementation. Blocked on issue with ignoreColumns.
 //@Entity(tableName = "purchase_table", ignoredColumns = arrayOf("mParsedJson"))
 //class CachedPurchase(mOriginalJson: String, mSignature: String) : Purchase(mOriginalJson, mSignature) {
 //    @PrimaryKey(autoGenerate = true)

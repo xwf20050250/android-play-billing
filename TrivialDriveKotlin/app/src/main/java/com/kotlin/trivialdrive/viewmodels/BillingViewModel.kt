@@ -25,7 +25,11 @@ import com.kotlin.trivialdrive.billingrepo.localdb.AugmentedSkuDetails
 import com.kotlin.trivialdrive.billingrepo.localdb.GasTank
 import com.kotlin.trivialdrive.billingrepo.localdb.GoldStatus
 import com.kotlin.trivialdrive.billingrepo.localdb.PremiumCar
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 /**
  * Notice just how small and simple this BillingViewModel is!!
@@ -92,6 +96,5 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
-
 
 }

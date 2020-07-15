@@ -15,7 +15,11 @@
  */
 package com.kotlin.trivialdrive.billingrepo.localdb
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Transaction
 import com.android.billingclient.api.Purchase
 
 @Dao
@@ -38,4 +42,7 @@ interface PurchaseDao {
 
     @Query("DELETE FROM purchase_table")
     fun deleteAll()
+
+    @Query("DELETE FROM purchase_table WHERE data = :purchase")
+    fun delete(purchase: Purchase)
 }
