@@ -6,7 +6,7 @@ This is the ClassyTaxi Java Android app to buy subscriptions.
 Classy Taxi is an end-to-end project that highlights subscription features on Google Play Billing,
 such as Real-time Developer Notifications, account hold, grace period, and more. The code has 3
 major components: an **Android app** to buy subscriptions, a **[Node.js server](https://github.com/android/play-billing-samples/tree/master/ClassyTaxiServer)**
-to manage subscriptions, and a read-only **[web client](https://github.com/android/play-billing-samples/tree/master/ClassyTaxiAppWeb)**
+to manage subscriptions, and a read-only **[web client](https://github.com/android/play-billing-samples/tree/master/ClassyTaxiServer/webapp)**
 to access the subscriptions on multiple platforms.
 
 ![Classy Taxi animation GIF showing subscription features of Google Play Billing](classy_taxi_animation.gif)
